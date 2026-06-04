@@ -44,18 +44,13 @@ def _source_list(chunks: list[dict]) -> list[dict]:
     return sources
 
 
-def _build_prompt(query: str, chunks: list[dict]) -> str:
+def _build_user_prompt(query: str, chunks: list[dict]) -> str:
     context = _build_context(chunks)
-    return (
-        f"{SYSTEM_PROMPT}\n\n"
-        f"## 참고 강의자료\n\n{context}\n\n"
-        f"## 질문\n\n{query}"
-    )
+    return f"## 참고 강의자료\n\n{context}\n\n## 질문\n\n{query}"
 
 
 async def stream_answer(query: str, chunks: list[dict]) -> AsyncIterator[str]:
-    prompt = _build_prompt(query, chunks)
-    async for token in llm_astream(prompt):
+    async for token in llm_astream(_build_user_prompt(query, chunks), system=SYSTEM_PROMPT):
         yield token
 
 
@@ -66,14 +61,12 @@ async def generate_exam(
     chunks: list[dict],
     count: int = 5,
 ) -> str:
-    """시험 문제 생성 (non-streaming)."""
     context = _build_context(chunks)
     prompt = (
-        f"{SYSTEM_PROMPT}\n\n"
         f"## 참고 강의자료\n\n{context}\n\n"
         f"## 요청\n\n"
         f"과목: {subject}, 주제: {topic}, 난이도: {difficulty}, 문제 수: {count}\n"
         f"위 강의자료를 기반으로 예상 시험 문제를 생성해주세요. "
         f"각 문제에 정답, 해설, 출처(문서명·페이지)를 포함하세요."
     )
-    return llm_run(prompt)
+    return llm_run(prompt, system=SYSTEM_PROMPT)

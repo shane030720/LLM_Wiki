@@ -11,7 +11,7 @@
 ## 구현 정보
 
 모든 에이전트는 `agents/` 폴더에 독립적인 Python 스크립트로 구현되어 있으며,
-내부적으로 `subprocess`를 통해 `claude -p`(Claude Code CLI)를 호출한다.
+`llm_provider.py`를 통해 LiteLLM API를 호출한다. `.env`의 `LLM_MODEL` 한 줄로 LLM 전환 가능.
 
 | 파일 | 에이전트 | 실행 방식 |
 |------|----------|-----------|
@@ -24,7 +24,8 @@
 ### 공통 의존성
 
 - Python 3.10+
-- `claude` CLI (Claude Code) — PATH에 설치되어 있어야 함
+- `litellm` — LLM 추상화 레이어 (Claude / OpenAI / Gemini / Ollama 등)
+- `duckduckgo-search` — 웹 검색 fallback (API 키 불필요)
 - `pypdf` — PDF 파일 읽기 (Edit Agent)
 
 ---
