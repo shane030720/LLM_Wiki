@@ -76,6 +76,25 @@ def auth():
     print("\n  rclone config\n")
 
 
+# ── 폴더 목록 ────────────────────────────────────────────────────────────────
+
+def list_folders(folder_path: str = "/") -> list[dict]:
+    """Drive 폴더의 하위 디렉터리 목록 반환."""
+    remote_path = f"{RCLONE_REMOTE}:{folder_path.lstrip('/')}"
+    result = _run(["lsf", "--dirs-only", remote_path], check=False)
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip())
+    folders = []
+    for name in result.stdout.strip().splitlines():
+        name = name.rstrip("/")
+        if name:
+            folders.append({
+                "name": name,
+                "path": f"{folder_path.rstrip('/')}/{name}",
+            })
+    return folders
+
+
 # ── 파일 목록 ─────────────────────────────────────────────────────────────────
 
 def list_files(folder_path: str = "/") -> list[dict]:

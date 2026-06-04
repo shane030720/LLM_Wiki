@@ -38,6 +38,81 @@ body {
 }
 .memo-btn:hover { background: #22233a; color: #a9b1d6; border-color: #4a5078; }
 
+/* ── Drive 모달 ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.6); z-index: 100;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #1a1b26; border: 1px solid #2a2b3d;
+  border-radius: 10px; width: 480px; max-height: 80vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-head {
+  padding: 14px 16px; border-bottom: 1px solid #2a2b3d;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 13px; font-weight: 700; color: #c0caf5; }
+.modal-close {
+  background: none; border: none; color: #7c88b0;
+  font-size: 16px; cursor: pointer; line-height: 1;
+}
+.modal-close:hover { color: #c0caf5; }
+.modal-body { padding: 12px 16px; flex: 1; overflow-y: auto; }
+.modal-body::-webkit-scrollbar { width: 3px; }
+.modal-body::-webkit-scrollbar-thumb { background: #2a2b3d; }
+.modal-foot {
+  padding: 10px 16px; border-top: 1px solid #2a2b3d;
+  display: flex; gap: 8px; align-items: center;
+}
+
+.drive-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+.drive-tab {
+  padding: 3px 10px; border-radius: 4px; border: 1px solid #2a2b3d;
+  background: transparent; color: #7c88b0; font-size: 11px; cursor: pointer;
+}
+.drive-tab.active { background: #22233a; color: #c0caf5; border-color: #4a5078; }
+
+.breadcrumb {
+  font-size: 11px; color: #7c88b0; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+}
+.breadcrumb-sep { color: #2a2b3d; }
+.breadcrumb-item { cursor: pointer; }
+.breadcrumb-item:hover { color: #a9b1d6; }
+
+.folder-list { display: flex; flex-direction: column; gap: 2px; }
+.folder-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 5px; cursor: pointer;
+  font-size: 12.5px; color: #a9b1d6; transition: background .1s;
+}
+.folder-item:hover { background: #1e1f32; }
+.folder-item.selected { background: #22233a; color: #c0caf5; }
+.folder-item-ico { font-size: 13px; flex-shrink: 0; }
+.folder-item-enter { margin-left: auto; font-size: 10px; color: #4a5078; }
+.folder-item:hover .folder-item-enter { color: #7c88b0; }
+
+.drive-loading { text-align: center; color: #7c88b0; font-size: 12px; padding: 20px 0; }
+.drive-error   { color: #f7768e; font-size: 12px; padding: 8px 0; }
+
+.subject-input {
+  flex: 1; background: #22233a; border: 1px solid #2a2b3d;
+  border-radius: 6px; color: #c0caf5; font-size: 12px;
+  padding: 6px 10px; outline: none;
+}
+.subject-input::placeholder { color: #4a5078; }
+.pull-btn {
+  background: #3d59a1; border: none; border-radius: 6px;
+  color: #c0caf5; font-size: 12px; padding: 6px 14px;
+  cursor: pointer; white-space: nowrap; transition: background .12s;
+}
+.pull-btn:hover { background: #4c6abf; }
+.pull-btn:disabled { opacity: .5; cursor: not-allowed; }
+.pull-msg { font-size: 11px; color: #9ece6a; }
+
 /* Layout */
 .main { display: flex; flex: 1; overflow: hidden; }
 
@@ -394,13 +469,46 @@ body {
   </button>
 </div>
 
+<!-- Drive 탐색 모달 -->
+<div class="modal-overlay" id="drive-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">☁️ Drive 폴더 가져오기</div>
+      <button class="modal-close" onclick="closeDriveModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="drive-tabs">
+        <button class="drive-tab active" id="tab-onedrive" onclick="setDriveProvider('onedrive',this)">OneDrive</button>
+        <button class="drive-tab" id="tab-gdrive" onclick="setDriveProvider('gdrive',this)">Google Drive</button>
+      </div>
+      <div class="breadcrumb" id="drive-breadcrumb"></div>
+      <div class="folder-list" id="drive-folder-list">
+        <div class="drive-loading">로딩 중...</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <input class="subject-input" id="drive-subject" placeholder="과목명 (raw/ 하위 폴더명)">
+      <button class="pull-btn" id="drive-pull-btn" onclick="pullSelected()" disabled>가져오기</button>
+      <span class="pull-msg" id="drive-pull-msg"></span>
+    </div>
+  </div>
+</div>
+
 <div class="main">
 
   <!-- Left Panel -->
   <div class="left">
-    <div class="left-header">
-      <div class="left-title">LLM Wiki</div>
-      <div class="left-sub">6과목 · 강의자료 모음</div>
+    <div class="left-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <div class="left-title">LLM Wiki</div>
+        <div class="left-sub" id="subject-count">강의자료 모음</div>
+      </div>
+      <button style="background:none;border:1px solid #2a2b3d;border-radius:5px;color:#7c88b0;font-size:10px;padding:3px 7px;cursor:pointer;margin-top:2px;transition:all .12s"
+        onmouseover="this.style.color='#a9b1d6';this.style.borderColor='#4a5078'"
+        onmouseout="this.style.color='#7c88b0';this.style.borderColor='#2a2b3d'"
+        onclick="openDriveModal()" title="Drive 폴더를 탐색해 강의자료 가져오기">
+        ☁️ Drive
+      </button>
     </div>
     <input class="search" id="search" type="text" placeholder="검색 (제목/태그)...">
     <div class="nav" id="nav"></div>
@@ -490,6 +598,9 @@ async function loadSubjects() {
     SUBJECTS_DATA = [];
   }
   renderNav();
+  const total = SUBJECTS_DATA.reduce((s, sub) => s + sub.files.length, 0);
+  const el = document.getElementById('subject-count');
+  if (el) el.textContent = `${SUBJECTS_DATA.length}과목 · ${total}개 파일`;
 }
 
 function renderNav(filter = '') {
@@ -868,6 +979,134 @@ async function gradeQuiz() {
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// DRIVE 모달
+// ─────────────────────────────────────────────
+let driveProvider = 'onedrive';
+let drivePath = '/';
+let driveSelected = null;
+
+function openDriveModal() {
+  drivePath = '/';
+  driveSelected = null;
+  document.getElementById('drive-subject').value = '';
+  document.getElementById('drive-pull-btn').disabled = true;
+  document.getElementById('drive-pull-msg').textContent = '';
+  document.getElementById('drive-modal').classList.add('open');
+  browseDrive('/');
+}
+
+function closeDriveModal() {
+  document.getElementById('drive-modal').classList.remove('open');
+}
+
+function setDriveProvider(provider, el) {
+  driveProvider = provider;
+  document.querySelectorAll('.drive-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  drivePath = '/';
+  driveSelected = null;
+  browseDrive('/');
+}
+
+async function browseDrive(path) {
+  drivePath = path;
+  driveSelected = null;
+  document.getElementById('drive-pull-btn').disabled = true;
+
+  const list = document.getElementById('drive-folder-list');
+  list.innerHTML = '<div class="drive-loading">로딩 중...</div>';
+
+  // 브레드크럼 렌더링
+  const crumb = document.getElementById('drive-breadcrumb');
+  const parts = path === '/' ? [''] : path.split('/').filter(Boolean);
+  let crumbHtml = `<span class="breadcrumb-item" onclick="browseDrive('/')">루트</span>`;
+  let cumPath = '';
+  for (const p of parts) {
+    cumPath += '/' + p;
+    const cp = cumPath;
+    crumbHtml += `<span class="breadcrumb-sep">›</span><span class="breadcrumb-item" onclick="browseDrive('${cp}')">${p}</span>`;
+  }
+  crumb.innerHTML = crumbHtml;
+
+  try {
+    const res = await fetch(`${API_BASE}/sync/browse?provider=${driveProvider}&path=${encodeURIComponent(path)}`);
+    if (!res.ok) {
+      const err = await res.json();
+      list.innerHTML = `<div class="drive-error">❌ ${escHtml(err.detail || '오류')}</div>`;
+      return;
+    }
+    const data = await res.json();
+    if (!data.folders.length) {
+      list.innerHTML = '<div class="drive-loading">폴더 없음</div>';
+      return;
+    }
+    list.innerHTML = data.folders.map(f => `
+      <div class="folder-item" data-path="${escHtml(f.path)}" data-name="${escHtml(f.name)}"
+           onclick="selectFolder('${escHtml(f.path)}', '${escHtml(f.name)}', event)"
+           ondblclick="browseDrive('${escHtml(f.path)}')">
+        <span class="folder-item-ico">📁</span>
+        <span>${escHtml(f.name)}</span>
+        <span class="folder-item-enter" title="하위 폴더 열기">→</span>
+      </div>`).join('');
+  } catch (e) {
+    list.innerHTML = `<div class="drive-error">❌ ${escHtml(String(e))}</div>`;
+  }
+}
+
+function selectFolder(path, name, e) {
+  // → 아이콘 클릭이면 하위 탐색
+  if (e.target.classList.contains('folder-item-enter')) {
+    browseDrive(path);
+    return;
+  }
+  driveSelected = path;
+  document.querySelectorAll('.folder-item').forEach(el => el.classList.remove('selected'));
+  e.currentTarget.classList.add('selected');
+
+  // 과목명 자동 채우기
+  const subjectInput = document.getElementById('drive-subject');
+  if (!subjectInput.value) subjectInput.value = name;
+  document.getElementById('drive-pull-btn').disabled = false;
+}
+
+async function pullSelected() {
+  const subject = document.getElementById('drive-subject').value.trim();
+  if (!driveSelected || !subject) return;
+
+  const btn = document.getElementById('drive-pull-btn');
+  const msg = document.getElementById('drive-pull-msg');
+  btn.disabled = true;
+  msg.textContent = '';
+  msg.style.color = '#9ece6a';
+
+  try {
+    const res = await fetch(`${API_BASE}/sync/pull`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: driveProvider, drive_folder: driveSelected, subject }),
+    });
+    const data = await res.json();
+    msg.textContent = res.ok ? `✓ ${data.message}` : `❌ ${data.detail}`;
+    if (!res.ok) msg.style.color = '#f7768e';
+    if (res.ok) {
+      setTimeout(() => {
+        closeDriveModal();
+        loadSubjects(); // 네비게이션 새로고침
+      }, 1500);
+    }
+  } catch (e) {
+    msg.textContent = `❌ ${e}`;
+    msg.style.color = '#f7768e';
+  }
+  btn.disabled = false;
+}
+
+// ESC 키로 모달 닫기
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDriveModal();
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   checkApi().then(() => loadSubjects());
   setInterval(checkApi, 10000);
