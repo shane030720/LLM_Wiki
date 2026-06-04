@@ -1,4 +1,4 @@
-# LLM Wiki — 대학교 1학기 강의자료 AI 학습 도우미
+# LLM Wiki — 강의자료 AI 학습 도우미
 
 강의자료(PDF·PPT·MD)를 넣으면 AI 에이전트가 자동으로 정리하고,
 자연어 질문 답변 · 시험 문제 출제 · 채점까지 한 화면에서 처리하는 **로컬 웹 서비스**입니다.
@@ -183,10 +183,6 @@ Back Agent 점검 → SQLite 메모 기록
 
 LLM Wiki 타이틀바의 **📋 AgentMEMO** 버튼으로 새 탭에서 바로 열 수 있습니다.
 
-### 5. AgentMEMO MCP (계획 중)
-
-AgentMEMO의 HTTP MCP 서버(포트 8765)가 완성되면 AI 에이전트가 직접 메모를 작성·조회할 수 있습니다.
-
 ---
 
 ## 시스템 구조
@@ -284,7 +280,8 @@ curl http://localhost:8000/api/health       # 상태
 ```bash
 bash new-semester.sh 8001
 # → ~/LLM_Wiki_8001/ 생성, http://localhost:8001 에서 실행
-# → 코드만 복사 (강의자료·DB 제외), API 키 자동 재사용
+# → 코드만 복사 (강의자료·DB 제외, 빈 상태로 시작), API 키 자동 재사용
+# → 기존 서버(8000)는 그대로 유지
 ```
 
 ---
