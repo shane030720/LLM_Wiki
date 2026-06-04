@@ -277,6 +277,9 @@ curl http://localhost:8000/api/health       # 상태
 
 ### 새 학기 서버
 
+> **참고:** LLM Wiki 서버는 한 학기 분량의 강의자료만 운용 가능합니다.
+> 새 학기가 시작되거나 한계 이상의 강의자료를 넣고 싶으면 새 서버를 만들어 주세요.
+
 ```bash
 bash new-semester.sh 8001
 # → ~/LLM_Wiki_8001/ 생성, http://localhost:8001 에서 실행
