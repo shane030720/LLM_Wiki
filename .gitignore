@@ -1,0 +1,32 @@
+# ── 교육자료 (저작권) ──────────────────────────
+raw/
+
+# ── 환경·시크릿 ───────────────────────────────
+.env
+*.env.local
+
+# ── Python ────────────────────────────────────
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# ── 데이터·인덱스 (용량 및 사용자별 상이) ─────
+chroma_db/
+data/
+wiki/ingest_status.json
+
+# ── OS / 에디터 ───────────────────────────────
+.DS_Store
+*:Zone.Identifier
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# ── Claude Code ───────────────────────────────
+.claude/

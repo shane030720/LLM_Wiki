@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Wiki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&family=Noto+Sans+KR&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Noto Sans KR', 'Noto Sans Math',
+    'Segoe UI Symbol', 'Apple Symbols',
+    sans-serif;
+  background: #1a1b26; color: #c0caf5;
+  height: 100vh; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+
+/* Title bar */
+.titlebar {
+  height: 36px; background: #16172a;
+  display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid #2a2b3d; position: relative; flex-shrink: 0;
+}
+.tb-buttons { position: absolute; left: 14px; display: flex; gap: 7px; }
+.tb-btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+.tb-close { background: #ff5f57; }
+.tb-min   { background: #ffbd2e; }
+.tb-max   { background: #28ca41; }
+.tb-title { font-size: 13px; color: #8892b0; font-weight: 500; }
+
+/* Layout */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Left Panel ── */
+.left {
+  width: 256px; min-width: 200px;
+  background: #1a1b26;
+  border-right: 1px solid #2a2b3d;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.left-header { padding: 14px 14px 6px; }
+.left-title { font-size: 13px; font-weight: 700; color: #c0caf5; }
+.left-sub   { font-size: 11px; color: #8892b0; margin-top: 1px; }
+.search {
+  margin: 7px 10px; padding: 5px 10px;
+  background: #1f2035; border: 1px solid #2a2b3d;
+  border-radius: 6px; color: #a9b1d6; font-size: 12px; outline: none;
+  width: calc(100% - 20px);
+}
+.search::placeholder { color: #7c88b0; }
+.nav { flex:1; overflow-y: auto; padding: 4px 0 12px; }
+.nav::-webkit-scrollbar { width: 3px; }
+.nav::-webkit-scrollbar-thumb { background: #2a2b3d; }
+
+/* Folders */
+.folder { cursor: pointer; user-select: none; }
+.folder-head {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; font-size: 12.5px; color: #a9b1d6;
+  transition: background .12s;
+}
+.folder-head:hover { background: #1e1f32; }
+.folder-ico { font-size: 14px; width: 18px; text-align: center; }
+.folder-label { flex:1; }
+.folder-arrow { font-size: 9px; color: #7c88b0; transition: transform .18s; }
+.folder.open .folder-arrow { transform: rotate(90deg); }
+.folder-body { display: none; }
+.folder.open .folder-body { display: block; }
+
+.doc {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 12px 5px 30px; font-size: 12px; color: #8892b0;
+  cursor: pointer; transition: background .12s;
+}
+.doc:hover { background: #1e1f32; color: #a9b1d6; }
+.doc.active { background: #22233a; color: #c0caf5; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink:0; }
+.dot-teal   { background: #4fd6be; }
+.dot-blue   { background: #7aa2f7; }
+.dot-orange { background: #ff9e64; }
+.dot-purple { background: #bb9af7; }
+.dot-green  { background: #9ece6a; }
+.dot-red    { background: #f7768e; }
+
+/* ── Center Panel ── */
+.center {
+  flex: 1; background: #ffffff;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.content-scroll { flex:1; overflow-y: auto; padding: 32px 52px; }
+.content-scroll::-webkit-scrollbar { width: 5px; }
+.content-scroll::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+.tags { display: flex; gap: 6px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+.tag {
+  padding: 2px 10px; border-radius: 100px; font-size: 11px; font-weight: 500;
+}
+.tag-subj   { background: #dbeafe; color: #1d4ed8; }
+.tag-kw     { background: #f0fdf4; color: #15803d; }
+.tag-date   { background: transparent; color: #9ca3af; font-size: 11px; }
+
+/* Markdown */
+.md { color: #1e1f26; line-height: 1.75; }
+.md h1 { font-size: 26px; font-weight: 700; margin-bottom: 22px; color: #111; }
+.md h2 { font-size: 17px; font-weight: 700; margin: 26px 0 10px; color: #1a1b26; }
+.md h3 { font-size: 14px; font-weight: 600; margin: 16px 0 7px; color: #1a1b26; }
+.md p  { margin-bottom: 11px; font-size: 14px; color: #374151; }
+.md ul,.md ol { padding-left: 22px; margin-bottom: 11px; }
+.md li { font-size: 14px; color: #374151; margin-bottom: 3px; }
+.md code {
+  background: #f3f4f6; padding: 1px 5px; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 12px; color: #dc2626;
+}
+.md pre {
+  background: #1a1b26; padding: 16px; border-radius: 8px;
+  overflow-x: auto; margin: 14px 0;
+}
+.md pre code { background: none; color: #c0caf5; padding: 0; font-size: 12.5px; }
+.md blockquote {
+  border-left: 3px solid #e5e7eb; padding-left: 16px;
+  color: #6b7280; margin: 12px 0; font-style: italic;
+}
+.md strong { font-weight: 600; color: #111827; }
+.md a { color: #2563eb; text-decoration: none; }
+.md a:hover { text-decoration: underline; }
+.md table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+.md th,.md td { border: 1px solid #e5e7eb; padding: 7px 12px; font-size: 13px; text-align: left; }
+.md th { background: #f9fafb; font-weight: 600; color: #374151; }
+.md hr { border: none; border-top: 1px solid #e5e7eb; margin: 22px 0; }
+
+.empty {
+  flex:1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #9ca3af; gap: 10px;
+}
+.empty-ico { font-size: 44px; }
+.empty-txt { font-size: 14px; }
+
+/* ── Right Panel ── */
+.right {
+  width: 350px; min-width: 280px;
+  background: #1a1b26;
+  border-left: 1px solid #2a2b3d;
+  display: flex; flex-direction: column;
+}
+.chat-head {
+  padding: 10px 14px; border-bottom: 1px solid #2a2b3d;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; gap: 8px;
+}
+.chat-title { font-size: 13px; font-weight: 600; color: #c0caf5; display: flex; align-items: center; gap: 6px; }
+.reset-btn {
+  font-size: 11px; color: #7c88b0; background: none; border: none;
+  cursor: pointer; padding: 3px 8px; border-radius: 4px; transition: all .12s;
+}
+.reset-btn:hover { background: #22233a; color: #a9b1d6; }
+
+.chat-msgs {
+  flex:1; overflow-y: auto; padding: 12px 10px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.chat-msgs::-webkit-scrollbar { width: 3px; }
+.chat-msgs::-webkit-scrollbar-thumb { background: #2a2b3d; }
+
+.msg { display: flex; flex-direction: column; max-width: 100%; }
+.msg-agent { align-items: flex-start; }
+.msg-user  { align-items: flex-end; }
+
+.msg-avatar { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+.msg-avatar-icon { font-size: 12px; }
+.msg-avatar-name { font-size: 10px; color: #7c88b0; }
+
+.bubble {
+  padding: 9px 12px; font-size: 12.5px; line-height: 1.6; max-width: 94%;
+}
+.bubble-agent {
+  background: #22233a; color: #a9b1d6;
+  border-radius: 4px 10px 10px 10px;
+}
+.bubble-user {
+  background: #3d59a1; color: #c0caf5;
+  border-radius: 10px 10px 4px 10px;
+}
+.bubble strong { color: #c0caf5; font-weight: 600; }
+.bubble code {
+  background: #16172a; color: #7dcfff;
+  padding: 1px 5px; border-radius: 3px; font-size: 11px;
+  font-family: monospace;
+}
+.bubble pre { background: #16172a; padding: 10px; border-radius: 6px; overflow-x: auto; margin: 6px 0; }
+.bubble pre code { background: none; padding: 0; }
+.bubble table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 11px; }
+.bubble th,.bubble td { border: 1px solid #2a2b3d; padding: 4px 8px; }
+.bubble th { background: #16172a; }
+.bubble ul,.bubble ol { padding-left: 18px; margin: 4px 0; }
+.bubble li { margin-bottom: 2px; }
+.bubble p { margin-bottom: 6px; }
+.bubble p:last-child { margin-bottom: 0; }
+
+/* Chat input */
+.chat-input-area {
+  padding: 10px 12px;
+  background: #1a1b26;
+  border-top: 1px solid #2a2b3d;
+  flex-shrink: 0;
+}
+.input-wrap {
+  display: flex; align-items: flex-end;
+  background: #22233a; border: 1px solid #2a2b3d;
+  border-radius: 8px; padding: 7px 10px; gap: 8px;
+}
+.chat-in {
+  flex:1; background: none; border: none; color: #c0caf5;
+  font-size: 12.5px; outline: none; resize: none;
+  min-height: 20px; max-height: 80px; line-height: 1.5;
+  font-family: inherit;
+}
+.chat-in::placeholder { color: #7c88b0; }
+.send-btn {
+  background: #3d59a1; border: none; border-radius: 5px;
+  color: #c0caf5; padding: 4px 12px; font-size: 11px;
+  cursor: pointer; transition: background .12s; flex-shrink: 0;
+}
+.send-btn:hover { background: #4c6abf; }
+
+/* API status indicator */
+.api-status {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; color: #7c88b0;
+}
+.api-dot { width: 6px; height: 6px; border-radius: 50%; background: #f7768e; }
+
+/* Source card */
+.src-card {
+  margin-top: 10px; padding: 8px 10px;
+  background: #16172a; border-radius: 6px;
+  border-left: 2px solid #4a5078;
+}
+.src-title { font-size: 10px; color: #8892b0; margin-bottom: 5px; font-weight: 600; }
+.src-item { font-size: 11px; color: #8892b0; margin-bottom: 2px; }
+.src-score { color: #7c88b0; margin-left: 4px; }
+
+/* Typing dots */
+.typing { display: flex; gap: 3px; align-items: center; padding: 4px 2px; }
+.tdot {
+  width: 5px; height: 5px; background: #7c88b0; border-radius: 50%;
+  animation: tdot 1.2s infinite;
+}
+.tdot:nth-child(2) { animation-delay: .2s; }
+.tdot:nth-child(3) { animation-delay: .4s; }
+@keyframes tdot {
+  0%,60%,100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+/* ── Tab system ── */
+.tab-btns { display: flex; gap: 3px; }
+.tab-btn {
+  font-size: 11px; padding: 3px 10px; border: none; border-radius: 4px;
+  cursor: pointer; background: transparent; color: #8892b0; transition: all .12s;
+}
+.tab-btn.active { background: #22233a; color: #c0caf5; }
+.tab-btn:hover:not(.active) { color: #a9b1d6; }
+.tab-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+.tab-content.hidden { display: none !important; }
+
+/* ── Quiz panel ── */
+.quiz-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.quiz-controls {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-bottom: 1px solid #2a2b3d; flex-shrink: 0;
+}
+.quiz-controls label { font-size: 11px; color: #8892b0; }
+.quiz-count {
+  width: 48px; background: #22233a; border: 1px solid #2a2b3d;
+  border-radius: 4px; color: #c0caf5; font-size: 12px;
+  padding: 3px 6px; outline: none; text-align: center;
+}
+.quiz-gen-btn {
+  margin-left: auto; background: #3d59a1; border: none; border-radius: 5px;
+  color: #c0caf5; padding: 4px 12px; font-size: 11px; cursor: pointer; transition: background .12s;
+}
+.quiz-gen-btn:hover { background: #4c6abf; }
+.quiz-gen-btn:disabled { opacity: .5; cursor: not-allowed; }
+.quiz-output {
+  flex:1; overflow-y: auto; padding: 12px;
+  font-size: 12.5px; color: #a9b1d6; line-height: 1.6;
+}
+.quiz-output::-webkit-scrollbar { width: 3px; }
+.quiz-output::-webkit-scrollbar-thumb { background: #2a2b3d; }
+/* 다크 배경에서 모든 .md 하위 요소를 밝은 색으로 강제 override */
+.quiz-output .md { color: #a9b1d6; }
+.quiz-output .md h1,
+.quiz-output .md h2 { color: #c0caf5; font-size: 14px; margin: 14px 0 6px; }
+.quiz-output .md h3 { font-size: 13px; color: #c0caf5; margin: 14px 0 6px; }
+.quiz-output .md p { color: #a9b1d6; margin-bottom: 6px; }
+.quiz-output .md li { color: #a9b1d6; }
+.quiz-output .md strong { color: #e0e6ff; }
+.quiz-output .md em { color: #b4c3f0; }
+.quiz-output .md a { color: #7aa2f7; }
+.quiz-output .md blockquote { border-left: 3px solid #4a5078; padding-left: 12px; color: #8892b0; font-style: normal; margin: 8px 0; }
+.quiz-output .md code { background: #16172a; color: #7dcfff; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+.quiz-output .md pre { background: #16172a; padding: 10px; border-radius: 6px; margin: 8px 0; }
+.quiz-output .md pre code { background: none; color: #c0caf5; padding: 0; }
+.quiz-output .md table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+.quiz-output .md th { background: #16172a; color: #a9b1d6; border-color: #2a2b3d; }
+.quiz-output .md td { color: #a9b1d6; border-color: #2a2b3d; }
+.quiz-output .md hr { border-color: #2a2b3d; }
+/* wiki agent 버블 내 blockquote 보정 */
+.bubble blockquote { border-left: 3px solid #4a5078; padding-left: 12px; color: #8892b0; font-style: normal; margin: 6px 0; }
+.bubble h1,.bubble h2 { color: #c0caf5; font-size: 14px; margin: 10px 0 5px; }
+.bubble h3 { color: #c0caf5; font-size: 13px; margin: 8px 0 4px; }
+.quiz-grade-area {
+  padding: 10px 12px; border-top: 1px solid #2a2b3d;
+  display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+}
+.quiz-answer-in {
+  background: #22233a; border: 1px solid #2a2b3d; border-radius: 6px;
+  color: #c0caf5; font-size: 12px; padding: 8px 10px; outline: none;
+  resize: none; min-height: 56px; max-height: 100px; font-family: inherit;
+}
+.quiz-answer-in::placeholder { color: #7c88b0; }
+.quiz-grade-btn {
+  background: #9ece6a; border: none; border-radius: 5px; color: #1a1b26;
+  padding: 5px 14px; font-size: 11px; font-weight: 600;
+  cursor: pointer; align-self: flex-end; transition: background .12s;
+}
+.quiz-grade-btn:hover { background: #b3e085; }
+.quiz-grade-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Quiz answer accordion ── */
+.quiz-ans {
+  margin: 6px 0 10px;
+  border: 1px solid #2a2b3d;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.quiz-ans summary {
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 11.5px;
+  color: #9ece6a;
+  background: #1e1f32;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background .12s;
+}
+.quiz-ans summary::-webkit-details-marker { display: none; }
+.quiz-ans summary:hover { background: #22233a; }
+.quiz-ans[open] summary { border-bottom: 1px solid #2a2b3d; color: #b3e085; }
+.quiz-ans-arrow { font-size: 9px; transition: transform .18s; }
+.quiz-ans[open] .quiz-ans-arrow { transform: rotate(90deg); }
+.quiz-ans-body { padding: 9px 12px; background: #16172a; }
+.quiz-ans-val { font-size: 13px; font-weight: 600; color: #9ece6a; margin-bottom: 5px; }
+.quiz-ans-exp { font-size: 12px; color: #a9b1d6; line-height: 1.5; }
+
+/* ── Center loading ── */
+.center-loading {
+  display: flex; align-items: center; gap: 8px;
+  color: #9ca3af; font-size: 13px; padding: 8px 0;
+}
+.spin {
+  width: 14px; height: 14px; border: 2px solid #e5e7eb;
+  border-top-color: #3b82f6; border-radius: 50%;
+  animation: spin .7s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="tb-buttons">
+    <div class="tb-btn tb-close"></div>
+    <div class="tb-btn tb-min"></div>
+    <div class="tb-btn tb-max"></div>
+  </div>
+  <div class="tb-title">LLM Wiki</div>
+</div>
+
+<div class="main">
+
+  <!-- Left Panel -->
+  <div class="left">
+    <div class="left-header">
+      <div class="left-title">LLM Wiki</div>
+      <div class="left-sub">6과목 · 강의자료 모음</div>
+    </div>
+    <input class="search" id="search" type="text" placeholder="검색 (제목/태그)...">
+    <div class="nav" id="nav"></div>
+  </div>
+
+  <!-- Center Panel -->
+  <div class="center" id="center">
+    <div class="empty">
+      <div class="empty-ico">📚</div>
+      <div class="empty-txt">좌측에서 강의자료를 선택하세요</div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right">
+    <div class="chat-head">
+      <div class="tab-btns">
+        <button class="tab-btn active" data-tab="wiki" onclick="switchTab('wiki')">🧠 위키 에이전트</button>
+        <button class="tab-btn" data-tab="quiz" onclick="switchTab('quiz')">📝 퀴즈</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="api-status"><div class="api-dot" id="api-status-dot"></div><span id="api-status-lbl">확인중...</span></div>
+        <button class="reset-btn" id="reset-btn" onclick="resetChat()">대화 초기화</button>
+      </div>
+    </div>
+
+    <!-- 위키 탭 -->
+    <div id="tab-wiki" class="tab-content">
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg msg-agent">
+          <div class="msg-avatar"><span class="msg-avatar-icon">🧠</span><span class="msg-avatar-name">위키 에이전트</span></div>
+          <div class="bubble bubble-agent">안녕하세요! 강의자료에 대해 궁금한 점을 질문해 주세요. 개념 설명, 비교, 요약 등을 도와드립니다.</div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <div class="input-wrap">
+          <textarea class="chat-in" id="chat-in" placeholder="질문/검증/수정 요청..." rows="1"></textarea>
+          <button class="send-btn" onclick="send()">전송</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 퀴즈 탭 -->
+    <div id="tab-quiz" class="tab-content hidden">
+      <div class="quiz-wrap">
+        <div class="quiz-controls">
+          <label>문제 수</label>
+          <input class="quiz-count" id="quiz-count" type="number" value="5" min="1" max="20">
+          <button class="quiz-gen-btn" onclick="generateQuiz()">문제 생성</button>
+        </div>
+        <div class="quiz-output" id="quiz-output">
+          <p style="color:#8892b0;font-size:12px">좌측에서 강의자료를 선택한 뒤 문제를 생성하세요.</p>
+        </div>
+      </div>
+      <div class="quiz-grade-area">
+        <textarea class="quiz-answer-in" id="quiz-answer" placeholder="답변을 입력하세요 (예: 1번-③, 2번-①)..." rows="3"></textarea>
+        <button class="quiz-grade-btn" onclick="gradeQuiz()">채점하기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<script>
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let activeFile    = null;  // { source, subject }
+let SUBJECTS_DATA = [];    // loaded from API
+let currentNotes  = '';    // Edit Agent 출력 (Quiz Agent에 전달)
+let currentQuestions = ''; // Quiz Agent 출력 (채점에 전달)
+
+const DOT_COLORS = [
+  'dot-teal','dot-blue','dot-orange','dot-purple','dot-green','dot-red'
+];
+
+// ─────────────────────────────────────────────
+// NAV — API 기반
+// ─────────────────────────────────────────────
+async function loadSubjects() {
+  try {
+    const r = await fetch(`${API_BASE}/subjects`);
+    const data = await r.json();
+    SUBJECTS_DATA = data.subjects || [];
+  } catch {
+    SUBJECTS_DATA = [];
+  }
+  renderNav();
+}
+
+function renderNav(filter = '') {
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  const lf = filter.toLowerCase();
+
+  if (!SUBJECTS_DATA.length) {
+    nav.innerHTML = '<div style="padding:16px 14px;font-size:12px;color:#8892b0">강의자료를 불러오는 중...</div>';
+    return;
+  }
+
+  SUBJECTS_DATA.forEach((subj, si) => {
+    let files = subj.files;
+    if (lf) {
+      files = files.filter(f => f.toLowerCase().includes(lf));
+      if (!files.length) return;
+    }
+
+    const dot = DOT_COLORS[si % DOT_COLORS.length];
+    const folder = document.createElement('div');
+    folder.className = 'folder' + (lf ? ' open' : '');
+
+    const head = document.createElement('div');
+    head.className = 'folder-head';
+    head.innerHTML = `<span class="folder-ico">📁</span><span class="folder-label">${subj.name}</span><span class="folder-arrow">▶</span>`;
+    head.addEventListener('click', () => folder.classList.toggle('open'));
+
+    const body = document.createElement('div');
+    body.className = 'folder-body';
+
+    files.forEach(fname => {
+      const key = `${subj.name}::${fname}`;
+      const isActive = activeFile && activeFile.source === fname && activeFile.subject === subj.name;
+      const item = document.createElement('div');
+      item.className = 'doc' + (isActive ? ' active' : '');
+      item.dataset.key = key;
+      // 파일명에서 확장자 제거해서 표시
+      const label = fname.replace(/\.[^.]+$/, '');
+      item.innerHTML = `<div class="dot ${dot}"></div><span title="${fname}">${label}</span>`;
+      item.addEventListener('click', () => selectFile(fname, subj.name, dot));
+      body.appendChild(item);
+    });
+
+    folder.appendChild(head);
+    folder.appendChild(body);
+    nav.appendChild(folder);
+  });
+}
+
+// ─────────────────────────────────────────────
+// SELECT FILE — Edit Agent 스트리밍
+// ─────────────────────────────────────────────
+async function selectFile(source, subject, dot) {
+  activeFile = { source, subject };
+  currentNotes = '';
+  currentQuestions = '';
+
+  document.querySelectorAll('.doc').forEach(el =>
+    el.classList.toggle('active', el.dataset.key === `${subject}::${source}`)
+  );
+
+  const center = document.getElementById('center');
+  const label = source.replace(/\.[^.]+$/, '');
+  const dotBg = {
+    'dot-teal':'#dbeafe|#1d4ed8','dot-blue':'#ede9fe|#6d28d9',
+    'dot-orange':'#fef3c7|#b45309','dot-purple':'#f3e8ff|#7c3aed',
+    'dot-green':'#dcfce7|#15803d','dot-red':'#fee2e2|#b91c1c'
+  };
+  const [bg, fg] = (dotBg[dot] || '#dbeafe|#1d4ed8').split('|');
+
+  center.innerHTML = `
+    <div class="content-scroll">
+      <div class="tags">
+        <span class="tag" style="background:${bg};color:${fg}">${subject}</span>
+        <span class="tag tag-kw">📄 ${escHtml(source)}</span>
+        <span class="tag tag-date" id="edit-status">Edit Agent 정리 중...</span>
+      </div>
+      <div class="center-loading" id="center-loading">
+        <div class="spin"></div>내용을 분석하고 있습니다...
+      </div>
+      <div class="md" id="md-body"></div>
+    </div>`;
+
+  try {
+    const resp = await fetch(`${API_BASE}/agents/edit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source, subject }),
+    });
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      currentNotes += decoder.decode(value, { stream: true });
+
+      const loading = document.getElementById('center-loading');
+      if (loading) loading.remove();
+
+      const mdBody = document.getElementById('md-body');
+      if (mdBody) mdBody.innerHTML = marked.parse(`# ${label}\n\n` + currentNotes);
+    }
+
+    const statusEl = document.getElementById('edit-status');
+    if (statusEl) statusEl.textContent = '✓ 정리 완료';
+
+  } catch (e) {
+    const mdBody = document.getElementById('md-body');
+    if (mdBody) mdBody.innerHTML = `<p style="color:#f7768e">오류: ${escHtml(String(e))}</p>`;
+  }
+}
+
+
+// ─────────────────────────────────────────────
+// CHAT
+// ─────────────────────────────────────────────
+function resetChat() {
+  document.getElementById('chat-msgs').innerHTML = `
+    <div class="msg msg-agent">
+      <div class="msg-avatar"><span class="msg-avatar-icon">🧠</span><span class="msg-avatar-name">위키 에이전트</span></div>
+      <div class="bubble bubble-agent">대화가 초기화되었습니다. 새로운 질문을 입력해 주세요.</div>
+    </div>`;
+}
+
+function appendMsg(role, html) {
+  const wrap = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = `msg msg-${role}`;
+  if (role === 'agent') {
+    div.innerHTML = `<div class="msg-avatar"><span class="msg-avatar-icon">🧠</span><span class="msg-avatar-name">위키 에이전트</span></div><div class="bubble bubble-agent">${html}</div>`;
+  } else {
+    div.innerHTML = `<div class="bubble bubble-user">${escHtml(html)}</div>`;
+  }
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function showTyping() {
+  const wrap = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.id = 'typing'; div.className = 'msg msg-agent';
+  div.innerHTML = `<div class="msg-avatar"><span class="msg-avatar-icon">🧠</span><span class="msg-avatar-name">위키 에이전트</span></div><div class="bubble bubble-agent"><div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+function hideTyping() { const el = document.getElementById('typing'); if (el) el.remove(); }
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─────────────────────────────────────────────
+// API CONFIG
+// ─────────────────────────────────────────────
+const API_BASE = 'http://localhost:8000/api';
+let apiOnline = false;
+
+async function checkApi() {
+  try {
+    const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(1500) });
+    apiOnline = r.ok;
+  } catch { apiOnline = false; }
+  updateApiStatus();
+}
+
+function updateApiStatus() {
+  const dot = document.getElementById('api-status-dot');
+  const lbl = document.getElementById('api-status-lbl');
+  if (!dot) return;
+  dot.style.background = apiOnline ? '#9ece6a' : '#f7768e';
+  lbl.textContent = apiOnline ? 'RAG 연결됨' : '오프라인 모드';
+}
+
+// ─────────────────────────────────────────────
+// SOURCE CARD
+// ─────────────────────────────────────────────
+function renderSources(sources) {
+  if (!sources || !sources.length) return '';
+  const items = sources.map(s =>
+    `<div class="src-item">📄 ${escHtml(s.source)}${s.page ? ` p.${s.page}` : ''} <span class="src-score">${(s.score*100).toFixed(0)}%</span></div>`
+  ).join('');
+  return `<div class="src-card"><div class="src-title">📚 출처</div>${items}</div>`;
+}
+
+// ─────────────────────────────────────────────
+// WIKI AGENT STREAMING
+// ─────────────────────────────────────────────
+async function sendWikiAgent(question) {
+  hideTyping();
+  const wrap = document.getElementById('chat-msgs');
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'msg msg-agent';
+  msgDiv.innerHTML = `<div class="msg-avatar"><span class="msg-avatar-icon">🧠</span><span class="msg-avatar-name">위키 에이전트</span></div><div class="bubble bubble-agent" id="stream-bubble"></div>`;
+  wrap.appendChild(msgDiv);
+  wrap.scrollTop = wrap.scrollHeight;
+  const bubble = document.getElementById('stream-bubble');
+
+  let rawText = '';
+
+  try {
+    const resp = await fetch(`${API_BASE}/agents/wiki`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question,
+        notes: currentNotes || '',
+        subject: activeFile ? activeFile.subject : null,
+      }),
+    });
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      rawText += decoder.decode(value, { stream: true });
+      bubble.innerHTML = marked.parse(rawText);
+      wrap.scrollTop = wrap.scrollHeight;
+    }
+  } catch (err) {
+    bubble.innerHTML = `<span style="color:#f7768e">오류: ${escHtml(String(err))}</span>`;
+    apiOnline = false;
+    updateApiStatus();
+  }
+
+  if (bubble) bubble.removeAttribute('id');
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+// ─────────────────────────────────────────────
+// OFFLINE FALLBACK
+// ─────────────────────────────────────────────
+function offlineReply(q) {
+  const lq = q.toLowerCase();
+  if (lq.includes('배열')) return '**배열(Array)**은 연속 메모리 구조.\n- 접근: **O(1)**, 삽입/삭제: **O(n)**';
+  if (lq.includes('스택')) return '**스택(Stack)** = LIFO\npush/pop/peek: O(1)\n활용: DFS, 괄호 검사, Undo/Redo';
+  if (lq.includes('큐')) return '**큐(Queue)** = FIFO\nenqueue/dequeue: O(1)\n활용: BFS, CPU 스케줄링';
+  if (lq.includes('정렬')) return '합병/힙/퀵: **O(n log n)**\n버블/선택/삽입: **O(n²)**';
+  if (lq.includes('dp') || lq.includes('동적')) return '**DP 조건**: 최적 부분 구조 + 중복 부분 문제\nTop-Down(메모이제이션) / Bottom-Up(타뷸레이션)';
+  if (lq.includes('tcp')) return '**TCP**: 연결 지향, 신뢰성 보장\n3-Way Handshake: SYN → SYN+ACK → ACK';
+  if (lq.includes('sql')) return '`SELECT … FROM … WHERE … GROUP BY … HAVING … ORDER BY`';
+  if (lq.includes('정규화')) return '1NF → 2NF → 3NF → BCNF\n부분종속 제거 → 이행종속 제거';
+  if (lq.includes('uml')) return '구조: 클래스, 객체, 컴포넌트\n행위: 유스케이스, 시퀀스, 활동, 상태';
+  return `> ⚠️ **오프라인 모드** — 백엔드 서버가 연결되지 않았습니다.\n\n서버를 시작하려면:\n\`\`\`bash\ncd backend && uvicorn app.main:app --reload\n\`\`\``;
+}
+
+function send() {
+  const inp = document.getElementById('chat-in');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = ''; inp.style.height = '';
+  appendMsg('user', text);
+
+  if (apiOnline) {
+    showTyping();
+    sendWikiAgent(text);
+  } else {
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      appendMsg('agent', marked.parse(offlineReply(text)));
+    }, 300);
+  }
+}
+
+// ─────────────────────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.tab === tab)
+  );
+  document.getElementById('tab-wiki').classList.toggle('hidden', tab !== 'wiki');
+  document.getElementById('tab-quiz').classList.toggle('hidden', tab !== 'quiz');
+  const resetBtn = document.getElementById('reset-btn');
+  if (resetBtn) resetBtn.style.display = tab === 'wiki' ? '' : 'none';
+}
+
+// ─────────────────────────────────────────────
+// QUIZ AGENT
+// ─────────────────────────────────────────────
+
+// QUIZ_ANSWER / QUIZ_EXPLAIN 마커를 <details> 아코디언으로 변환
+function preProcessQuiz(text) {
+  // 두 마커가 연속된 경우 처리 (순서 보장)
+  return text.replace(
+    /^QUIZ_ANSWER:\s*(.+)\nQUIZ_EXPLAIN:\s*(.+)$/gm,
+    (_, ans, exp) => {
+      const sa = ans.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const se = exp.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return (
+        `<details class="quiz-ans">` +
+        `<summary><span class="quiz-ans-arrow">▶</span>정답 확인</summary>` +
+        `<div class="quiz-ans-body">` +
+        `<div class="quiz-ans-val">${sa}</div>` +
+        `<div class="quiz-ans-exp">${se}</div>` +
+        `</div></details>`
+      );
+    }
+  );
+}
+
+async function generateQuiz() {
+  if (!currentNotes.trim()) {
+    alert('먼저 좌측에서 강의자료 파일을 선택하세요.');
+    return;
+  }
+  const count = parseInt(document.getElementById('quiz-count').value) || 5;
+  const genBtn = document.querySelector('.quiz-gen-btn');
+  const output = document.getElementById('quiz-output');
+
+  genBtn.disabled = true;
+  genBtn.textContent = '생성 중...';
+  currentQuestions = '';
+  output.innerHTML = '<div class="center-loading"><div class="spin"></div>문제를 출제하고 있습니다...</div>';
+
+  try {
+    const resp = await fetch(`${API_BASE}/agents/quiz/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notes: currentNotes, count }),
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    currentQuestions = data.result || '';
+    output.innerHTML = `<div class="md">${marked.parse(preProcessQuiz(currentQuestions))}</div>`;
+  } catch (e) {
+    output.innerHTML = `<p style="color:#f7768e">오류: ${escHtml(String(e))}</p>`;
+  }
+
+  genBtn.disabled = false;
+  genBtn.textContent = '문제 생성';
+}
+
+async function gradeQuiz() {
+  if (!currentQuestions.trim()) {
+    alert('먼저 문제를 생성하세요.');
+    return;
+  }
+  const answer = document.getElementById('quiz-answer').value.trim();
+  if (!answer) { alert('답변을 입력하세요.'); return; }
+
+  const gradeBtn = document.querySelector('.quiz-grade-btn');
+  const output = document.getElementById('quiz-output');
+
+  gradeBtn.disabled = true;
+  gradeBtn.textContent = '채점 중...';
+
+  try {
+    const resp = await fetch(`${API_BASE}/agents/quiz/grade`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notes: currentNotes, question: currentQuestions, answer }),
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    output.innerHTML += `<hr style="border-color:#2a2b3d;margin:14px 0"><div class="md">${marked.parse(data.result || '')}</div>`;
+    output.scrollTop = output.scrollHeight;
+  } catch (e) {
+    output.innerHTML += `<p style="color:#f7768e">채점 오류: ${escHtml(String(e))}</p>`;
+  }
+
+  gradeBtn.disabled = false;
+  gradeBtn.textContent = '채점하기';
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  checkApi().then(() => loadSubjects());
+  setInterval(checkApi, 10000);
+
+  document.getElementById('search').addEventListener('input', e => renderNav(e.target.value));
+
+  const inp = document.getElementById('chat-in');
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+  inp.addEventListener('input', function() {
+    this.style.height = '';
+    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+  });
+});
+</script>
+</body>
+</html>
