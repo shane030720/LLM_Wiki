@@ -5,11 +5,13 @@
 """
 
 import json
+import os
+import sqlite3
 import subprocess
 import sys
 import re
 import shutil
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).parent.parent
@@ -23,6 +25,61 @@ EDIT_AGENT = Path(__file__).parent / "edit_agent.py"
 
 sys.path.insert(0, str(PROJECT_DIR))
 from llm_provider import run as llm_run
+
+# ── AgentMEMO 메모 기록 ───────────────────────────────────────────────────────
+_MEMO_DB = Path(os.environ.get(
+    "AGENTMEMO_DB_PATH",
+    str(PROJECT_DIR / "data" / "agentmemo.db")
+))
+_MEMO_SCHEMA = """
+CREATE TABLE IF NOT EXISTS memos (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    type       TEXT NOT NULL,
+    state      TEXT NOT NULL,
+    header     TEXT NOT NULL,
+    contents   TEXT NOT NULL DEFAULT ''
+);
+"""
+
+def _now_iso() -> str:
+    return datetime.now(UTC).isoformat()
+
+def _memo_conn() -> sqlite3.Connection:
+    _MEMO_DB.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(_MEMO_DB))
+    conn.executescript(_MEMO_SCHEMA)
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+def memo_create(header: str, contents: str = "", type: str = "PLAN", state: str = "OPEN") -> int:
+    now = _now_iso()
+    with _memo_conn() as conn:
+        cur = conn.execute(
+            "INSERT INTO memos (created_at,updated_at,type,state,header,contents) VALUES (?,?,?,?,?,?)",
+            (now, now, type, state, header, contents)
+        )
+        return cur.lastrowid
+
+def memo_update(memo_id: int, contents: str, state: str) -> None:
+    with _memo_conn() as conn:
+        conn.execute(
+            "UPDATE memos SET updated_at=?, contents=?, state=? WHERE id=?",
+            (_now_iso(), contents, state, memo_id)
+        )
+
+def memo_append(memo_id: int, text: str, state: str | None = None) -> None:
+    with _memo_conn() as conn:
+        row = conn.execute("SELECT contents,state FROM memos WHERE id=?", (memo_id,)).fetchone()
+        if not row:
+            return
+        new_contents = (row[0] + "\n\n" + text) if row[0] else text
+        new_state = state or row[1]
+        conn.execute(
+            "UPDATE memos SET updated_at=?, contents=?, state=? WHERE id=?",
+            (_now_iso(), new_contents, new_state, memo_id)
+        )
 
 SYSTEM_PROMPT = """너는 LLM Wiki 유지보수 에이전트야.
 
@@ -214,11 +271,30 @@ def trigger_rebuild_index() -> None:
 def run(auto_ingest: bool = True) -> str:
     today = datetime.now().strftime("%Y-%m-%d")
 
+    # AgentMEMO: 점검 시작 메모
+    memo_id = memo_create(
+        header=f"Back Agent 점검 — {today}",
+        type="PLAN",
+        state="IN_PROGRESS",
+    )
+
     new_pdfs, stale_pdfs = print_ingest_summary()
-
     needs_ingest = bool(new_pdfs or stale_pdfs)
-
     status_report = build_status_report(today, new_pdfs, stale_pdfs)
+
+    # AgentMEMO: 점검 결과 기록
+    summary_lines = []
+    if new_pdfs:
+        summary_lines.append(f"**신규 파일:** {len(new_pdfs)}개")
+        for p in new_pdfs[:5]:
+            summary_lines.append(f"- `{Path(p).name}`")
+        if len(new_pdfs) > 5:
+            summary_lines.append(f"- *(외 {len(new_pdfs)-5}개)*")
+    if stale_pdfs:
+        summary_lines.append(f"**갱신 필요:** {len(stale_pdfs)}개")
+    if not needs_ingest:
+        summary_lines.append("✅ 이상 없음 — 모든 파일 처리 완료")
+    memo_append(memo_id, "\n".join(summary_lines) if summary_lines else "점검 완료")
 
     prompt = (
         f"다음 LLM Wiki 점검 결과를 바탕으로 AGENTS.md 형식에 맞게 "
@@ -231,8 +307,16 @@ def run(auto_ingest: bool = True) -> str:
 
     # 처리할 파일이 있으면 edit_agent 자동 실행
     if needs_ingest and auto_ingest:
-        print(f"  미처리/갱신 파일 {len(new_pdfs) + len(stale_pdfs)}개 발견 → edit_agent 자동 실행", file=sys.stderr)
+        count = len(new_pdfs) + len(stale_pdfs)
+        print(f"  미처리/갱신 파일 {count}개 발견 → edit_agent 자동 실행", file=sys.stderr)
+        memo_append(
+            memo_id,
+            f"**Ingest 시작:** {count}개 파일 처리 중...",
+            state="IN_PROGRESS",
+        )
         trigger_ingest()
+    else:
+        memo_update(memo_id, "\n".join(summary_lines) if summary_lines else "이상 없음", state="CLOSED")
 
     return report
 

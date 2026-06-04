@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 from app.db.chroma import init_chroma
-from app.routers import query, sync, subjects, agents as agents_router
+from app.routers import query, sync, subjects, agents as agents_router, agentmemo as agentmemo_router
 
 AGENTS_DIR = Path(__file__).resolve().parent.parent.parent / "agents"
 
@@ -39,10 +39,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(query.router,         prefix="/api")
-app.include_router(sync.router,          prefix="/api")
-app.include_router(subjects.router,      prefix="/api")
-app.include_router(agents_router.router, prefix="/api")
+app.include_router(query.router,           prefix="/api")
+app.include_router(sync.router,            prefix="/api")
+app.include_router(subjects.router,        prefix="/api")
+app.include_router(agents_router.router,   prefix="/api")
+app.include_router(agentmemo_router.router)
 
 # Serve the GUI from project root
 GUI_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "wiki_gui.html")

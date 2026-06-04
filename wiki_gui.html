@@ -30,6 +30,13 @@ body {
 .tb-min   { background: #ffbd2e; }
 .tb-max   { background: #28ca41; }
 .tb-title { font-size: 13px; color: #8892b0; font-weight: 500; }
+.memo-btn {
+  position: absolute; right: 14px;
+  background: none; border: 1px solid #2a2b3d; border-radius: 5px;
+  color: #7c88b0; font-size: 11px; padding: 3px 10px;
+  cursor: pointer; transition: all .12s;
+}
+.memo-btn:hover { background: #22233a; color: #a9b1d6; border-color: #4a5078; }
 
 /* Layout */
 .main { display: flex; flex: 1; overflow: hidden; }
@@ -382,6 +389,9 @@ body {
     <div class="tb-btn tb-max"></div>
   </div>
   <div class="tb-title">LLM Wiki</div>
+  <button class="memo-btn" onclick="window.open('/agentmemo','_blank')" title="AgentMEMO — 에이전트 작업 메모 뷰어">
+    📋 AgentMEMO
+  </button>
 </div>
 
 <div class="main">
