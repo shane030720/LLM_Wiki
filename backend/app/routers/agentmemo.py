@@ -87,32 +87,130 @@ def get_memos():
     return JSONResponse(_read_memos())
 
 
+def _ingest_with_progress(memo_id: int, files: list | None = None):
+    """edit_agent.py --ingest 를 실행하며 stderr을 실시간으로 메모에 기록."""
+    import subprocess
+    cmd = [sys.executable, str(AGENTS_DIR / "edit_agent.py"), "--ingest"]
+    if files:
+        # 특정 파일만 처리 (개별 study-notes 모드 → 상태 직접 기록)
+        pass  # 아래 ingest-all 전용 로직 사용
+
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    log_lines: list[str] = []
+    for raw in proc.stderr:
+        line = raw.rstrip()
+        if not line:
+            continue
+        log_lines.append(line)
+        # 5줄마다 또는 중요 키워드 포함 시 메모 업데이트
+        if len(log_lines) % 5 == 0 or any(k in line for k in ("처리 중:", "완료:", "오류", "✓")):
+            _memo_update(memo_id, "\n".join(log_lines[-30:]), state="IN_PROGRESS")
+
+    proc.wait()
+    ok = proc.returncode == 0
+    _memo_update(
+        memo_id,
+        "\n".join(log_lines[-50:]) + f"\n\n{'✅ 완료' if ok else '❌ 오류 (returncode=' + str(proc.returncode) + ')'}",
+        state="CLOSED" if ok else "OPEN",
+    )
+
+
 @router.post("/api/agentmemo/ingest")
 async def trigger_ingest(background_tasks: BackgroundTasks):
-    """edit_agent --ingest 를 백그라운드로 실행하고 진행 상황을 메모로 기록."""
+    """edit_agent --ingest 를 백그라운드로 실행하고 stderr 진행 상황을 실시간으로 메모에 기록."""
     memo_id = _memo_create(
         header=f"Ingest 실행 — {datetime.now().strftime('%Y-%m-%d %H:%M')}",
         contents="**Ingest 시작** — 미처리 파일을 처리합니다...",
         type="IMPLEMENT",
         state="IN_PROGRESS",
     )
+    background_tasks.add_task(_ingest_with_progress, memo_id)
+    return {"memo_id": memo_id, "message": "Ingest 시작됨 — AgentMEMO에서 진행 상황을 확인하세요."}
+
+
+@router.post("/api/agentmemo/ingest-all")
+async def trigger_ingest_all(background_tasks: BackgroundTasks):
+    """미처리 파일을 하나씩 순서대로 처리하며 파일별 진행 상황을 메모에 기록."""
+    import json as _json
+
+    # 미처리 파일 목록 수집
+    raw_dir = ROOT / "raw"
+    status_file = ROOT / "wiki" / "ingest_status.json"
+    ext = {".pdf", ".md", ".txt", ".pptx"}
+    status: dict = {}
+    if status_file.exists():
+        try:
+            status = _json.loads(status_file.read_text())
+        except Exception:
+            pass
+
+    unprocessed = []
+    if raw_dir.exists():
+        for f in sorted(raw_dir.rglob("*")):
+            if f.is_file() and f.suffix.lower() in ext and ":Zone.Identifier" not in f.name:
+                rel = str(f.relative_to(ROOT))
+                if rel not in status:
+                    unprocessed.append(f)
+
+    if not unprocessed:
+        return {"message": "미처리 파일이 없습니다.", "count": 0}
+
+    memo_id = _memo_create(
+        header=f"전체 Ingest — {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        contents=f"**총 {len(unprocessed)}개 파일 처리 예정**\n\n" +
+                 "\n".join(f"- `{f.name}`" for f in unprocessed[:10]) +
+                 (f"\n- *(외 {len(unprocessed)-10}개)*" if len(unprocessed) > 10 else ""),
+        type="IMPLEMENT",
+        state="IN_PROGRESS",
+    )
 
     def _run():
         import subprocess
-        result = subprocess.run(
-            [sys.executable, str(AGENTS_DIR / "edit_agent.py"), "--ingest"],
-            capture_output=True, text=True, timeout=1800,
-        )
-        ok = result.returncode == 0
-        summary = (result.stdout or result.stderr or "출력 없음").strip()[-800:]
+        done, failed = 0, 0
+        total = len(unprocessed)
+
+        for i, pdf in enumerate(unprocessed, 1):
+            rel = str(pdf.relative_to(ROOT))
+            _memo_update(
+                memo_id,
+                f"**진행: {i-1}/{total}** — `{pdf.name}` 처리 중...",
+                state="IN_PROGRESS",
+            )
+
+            proc = subprocess.run(
+                [sys.executable, str(AGENTS_DIR / "edit_agent.py"), str(pdf)],
+                capture_output=True, text=True,
+                # 타임아웃 없음 — 파일당 LLM 호출 시간이 다를 수 있음
+            )
+
+            if proc.returncode == 0 and proc.stdout.strip():
+                # study-notes 출력을 wiki 페이지로 저장하는 건 edit_agent가 담당
+                # 여기서는 상태 파일에 done 기록
+                done += 1
+                try:
+                    s = _json.loads(status_file.read_text()) if status_file.exists() else {}
+                    s[rel] = {"status": "done", "processed_at": _now_iso()}
+                    status_file.write_text(_json.dumps(s, ensure_ascii=False, indent=2))
+                except Exception:
+                    pass
+            else:
+                failed += 1
+
         _memo_update(
             memo_id,
-            f"{'✅ 완료' if ok else '❌ 오류'}\n\n```\n{summary}\n```",
-            state="CLOSED" if ok else "OPEN",
+            f"**완료: {done}/{total}개 처리** {'✅' if failed == 0 else f'⚠️ {failed}개 실패'}\n\n"
+            f"- 성공: {done}개\n- 실패: {failed}개",
+            state="CLOSED",
         )
 
     background_tasks.add_task(_run)
-    return {"memo_id": memo_id, "message": "Ingest 시작됨 — AgentMEMO에서 진행 상황을 확인하세요."}
+    return {"memo_id": memo_id, "message": f"{len(unprocessed)}개 파일 전체 Ingest 시작됨.", "count": len(unprocessed)}
 
 
 @router.post("/api/agentmemo/backcheck")
@@ -255,10 +353,12 @@ header {
   font-size: 12px; font-weight: 600; cursor: pointer; transition: all .12s;
 }
 .action-btn:disabled { opacity: .5; cursor: not-allowed; }
-.ingest-btn  { background: #1e3a5f; color: #7aa2f7; }
-.ingest-btn:hover:not(:disabled)  { background: #2a4d7f; }
-.check-btn   { background: #22233a; color: #a9b1d6; border: 1px solid #2a2b3d; }
-.check-btn:hover:not(:disabled)   { background: #2d2e45; }
+.ingest-btn      { background: #1e3a5f; color: #7aa2f7; }
+.ingest-btn:hover:not(:disabled)      { background: #2a4d7f; }
+.ingest-all-btn  { background: #1a3a2a; color: #9ece6a; }
+.ingest-all-btn:hover:not(:disabled)  { background: #244d38; }
+.check-btn       { background: #22233a; color: #a9b1d6; border: 1px solid #2a2b3d; }
+.check-btn:hover:not(:disabled)       { background: #2d2e45; }
 .action-msg  { font-size: 11px; color: #9ece6a; }
 </style>
 </head>
@@ -279,6 +379,9 @@ header {
 <div class="actions">
   <button class="action-btn ingest-btn" onclick="runAction('ingest')" id="btn-ingest">
     ⬇️ Ingest 실행
+  </button>
+  <button class="action-btn ingest-all-btn" onclick="runAction('ingest-all')" id="btn-ingest-all">
+    📦 모든 Ingest 실행
   </button>
   <button class="action-btn check-btn" onclick="runAction('backcheck')" id="btn-backcheck">
     🔍 점검 재실행
@@ -369,7 +472,9 @@ poll();
 setInterval(poll, 2000);
 
 async function runAction(type) {
-  const btnId = type === 'ingest' ? 'btn-ingest' : 'btn-backcheck';
+  const btnId = type === 'ingest' ? 'btn-ingest'
+              : type === 'ingest-all' ? 'btn-ingest-all'
+              : 'btn-backcheck';
   const btn = document.getElementById(btnId);
   const msg = document.getElementById('action-msg');
   btn.disabled = true;
