@@ -19,9 +19,9 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# systemd 서비스는 nvm PATH를 상속하지 않으므로 claude 경로를 명시한다
-_CLAUDE_BIN_DIR = "/home/shane/.nvm/versions/node/v24.14.0/bin"
-_AGENT_ENV = {**os.environ, "PATH": f"{_CLAUDE_BIN_DIR}:{os.environ.get('PATH', '')}"}
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
+sys.path.insert(0, str(ROOT_DIR))
+from llm_provider import astream as llm_astream, web_search as llm_web_search
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -118,11 +118,11 @@ class QuizGradeRequest(BaseModel):
 
 
 async def _stream_proc(cmd: list[str]):
+    """edit_agent.py 등 subprocess 스트리밍 (LiteLLM stream → stdout → 여기서 읽음)."""
     proc = await asyncio.create_subprocess_exec(
         *cmd,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.DEVNULL,
-        env=_AGENT_ENV,
     )
     decoder = codecs.getincrementaldecoder("utf-8")("replace")
     while True:
@@ -183,15 +183,16 @@ async def wiki_query(req: WikiRequest):
     if context_parts:
         context = "\n\n".join(context_parts)
         prompt = f"{context}\n\n## 질문\n\n{req.question}"
-        cmd = ["claude", "--system-prompt", _WIKI_SYSTEM_PROMPT, "-p", prompt]
     else:
-        # 3순위: 웹 검색
-        prompt = f"## 질문\n\n{req.question}\n\nwiki에서 관련 내용을 찾을 수 없습니다. 웹에서 조사해 답변하세요."
-        cmd = ["claude", "--system-prompt", _WIKI_SYSTEM_PROMPT, "-p", prompt,
-               "--allowed-tools", "WebSearch"]
+        # 3순위: 웹 검색 (모든 LLM에서 동작하는 DuckDuckGo 사용)
+        search_results = llm_web_search(req.question)
+        prompt = (
+            f"## 질문\n\n{req.question}\n\n"
+            f"## 웹 검색 결과\n\n{search_results}"
+        )
 
     return StreamingResponse(
-        _stream_proc(cmd),
+        llm_astream(prompt, system=_WIKI_SYSTEM_PROMPT),
         media_type="text/plain; charset=utf-8",
     )
 

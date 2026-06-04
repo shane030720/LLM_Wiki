@@ -7,9 +7,12 @@
 """
 
 import argparse
-import subprocess
 import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+from llm_provider import run as llm_run
 
 SYSTEM_PROMPT = """너는 시험 문제 출제 및 채점 전용 에이전트야.
 
@@ -77,16 +80,7 @@ def generate(notes_file: str, count: int) -> str:
         f"⭐ 표시된 내용에서 더 많은 문제를 내줘.\n\n{notes}"
     )
 
-    result = subprocess.run(
-        ["claude", "--system-prompt", SYSTEM_PROMPT, "-p", prompt],
-        capture_output=True,
-        text=True,
-        timeout=300,
-    )
-
-    if result.returncode != 0:
-        sys.exit(f"오류: {result.stderr.strip()}")
-    return result.stdout.strip()
+    return llm_run(prompt, system=SYSTEM_PROMPT)
 
 
 def grade(notes_file: str, question: str, answer: str) -> str:
@@ -97,17 +91,7 @@ def grade(notes_file: str, question: str, answer: str) -> str:
         f"## 문제\n{question}\n\n"
         f"## 학생 답변\n{answer}"
     )
-
-    result = subprocess.run(
-        ["claude", "--system-prompt", SYSTEM_PROMPT, "-p", prompt],
-        capture_output=True,
-        text=True,
-        timeout=300,
-    )
-
-    if result.returncode != 0:
-        sys.exit(f"오류: {result.stderr.strip()}")
-    return result.stdout.strip()
+    return llm_run(prompt, system=SYSTEM_PROMPT)
 
 
 def main():

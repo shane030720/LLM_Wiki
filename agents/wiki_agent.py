@@ -5,6 +5,10 @@
 """
 
 import subprocess
+from pathlib import Path as _Path
+import sys as _sys
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
+from llm_provider import stream as llm_stream, web_search as llm_web_search
 import sys
 import re
 from pathlib import Path
@@ -105,16 +109,6 @@ def find_relevant_pages(query: str, max_pages: int = 5) -> list[tuple[Path, str]
     return result
 
 
-def call_claude(system_prompt: str, prompt: str, web_search: bool = False):
-    """claude를 호출하고 stdout을 부모 프로세스로 직접 스트리밍한다."""
-    cmd = ["claude", "--system-prompt", system_prompt, "-p", prompt]
-    if web_search:
-        cmd += ["--allowed-tools", "WebSearch"]
-    # stdout=None → 부모 stdout 상속 (터미널 or agents.py의 PIPE)
-    proc = subprocess.Popen(cmd, stderr=subprocess.DEVNULL)
-    proc.wait()
-
-
 def run(question: str):
     pages = find_relevant_pages(question)
 
@@ -127,11 +121,18 @@ def run(question: str):
             f"## 질문\n{question}\n\n"
             f"## 관련 Wiki 페이지\n{page_section}"
         )
-        call_claude(SYSTEM_PROMPT_WIKI, prompt)
+        system = SYSTEM_PROMPT_WIKI
     else:
         print("[wiki에서 찾을 수 없음 → 웹 검색 중...]", file=sys.stderr)
-        prompt = f"## 질문\n{question}"
-        call_claude(SYSTEM_PROMPT_WEB, prompt, web_search=True)
+        search_results = llm_web_search(question)
+        prompt = (
+            f"## 질문\n{question}\n\n"
+            f"## 웹 검색 결과\n{search_results}"
+        )
+        system = SYSTEM_PROMPT_WEB
+
+    for chunk in llm_stream(prompt, system=system):
+        print(chunk, end="", flush=True)
 
 
 if __name__ == "__main__":

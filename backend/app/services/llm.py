@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import asyncio
-import codecs
+import sys
+from pathlib import Path
 from typing import AsyncIterator
 
-MODEL_FLAG = []  # add e.g. ["--model", "claude-opus-4-5"] to override
+ROOT = Path(__file__).resolve().parent.parent.parent.parent
+sys.path.insert(0, str(ROOT))
+from llm_provider import astream as llm_astream, run as llm_run
 
 SYSTEM_PROMPT = """당신은 대학교 강의자료 기반 LLM Wiki 어시스턴트입니다.
 
@@ -52,29 +54,9 @@ def _build_prompt(query: str, chunks: list[dict]) -> str:
 
 
 async def stream_answer(query: str, chunks: list[dict]) -> AsyncIterator[str]:
-    """claude -p 를 subprocess로 호출하고 stdout을 청크 단위로 스트리밍."""
     prompt = _build_prompt(query, chunks)
-
-    proc = await asyncio.create_subprocess_exec(
-        "claude", "-p", prompt, *MODEL_FLAG,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.DEVNULL,
-    )
-
-    # 멀티바이트 문자(한국어 등)가 청크 경계에서 잘리지 않도록 incremental decoder 사용
-    decoder = codecs.getincrementaldecoder("utf-8")("replace")
-    while True:
-        chunk = await proc.stdout.read(256)
-        if not chunk:
-            tail = decoder.decode(b"", final=True)
-            if tail:
-                yield tail
-            break
-        text = decoder.decode(chunk)
-        if text:
-            yield text
-
-    await proc.wait()
+    async for token in llm_astream(prompt):
+        yield token
 
 
 async def generate_exam(
@@ -94,11 +76,4 @@ async def generate_exam(
         f"위 강의자료를 기반으로 예상 시험 문제를 생성해주세요. "
         f"각 문제에 정답, 해설, 출처(문서명·페이지)를 포함하세요."
     )
-
-    proc = await asyncio.create_subprocess_exec(
-        "claude", "-p", prompt, *MODEL_FLAG,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.DEVNULL,
-    )
-    stdout, _ = await proc.communicate()
-    return stdout.decode("utf-8", errors="replace")
+    return llm_run(prompt)

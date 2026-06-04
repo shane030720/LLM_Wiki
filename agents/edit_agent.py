@@ -25,8 +25,8 @@ INDEX_FILE = WIKI_DIR / "index.md"
 LOG_FILE = WIKI_DIR / "log.md"
 STATUS_FILE = WIKI_DIR / "ingest_status.json"
 
-# nvm 등 비표준 경로에 설치된 경우를 위해 절대 경로로 고정
-CLAUDE_BIN = shutil.which("claude") or "/home/shane/.nvm/versions/node/v24.14.0/bin/claude"
+sys.path.insert(0, str(PROJECT_DIR))
+from llm_provider import run as llm_run, stream as llm_stream
 
 
 # ── 기존: study notes 모드 ────────────────────────────────────────────
@@ -81,16 +81,7 @@ def run(file_path: str) -> str:
 
     prompt = f"다음 교육자료를 정리해줘.\n파일명: {path.name}\n\n{content}"
 
-    result = subprocess.run(
-        [CLAUDE_BIN, "--system-prompt", EDIT_SYSTEM_PROMPT, "-p", prompt],
-        capture_output=True,
-        text=True,
-        timeout=300,
-    )
-
-    if result.returncode != 0:
-        return f"오류: {result.stderr.strip()}"
-    return result.stdout.strip()
+    return llm_run(prompt, system=EDIT_SYSTEM_PROMPT)
 
 
 # ── 신규: wiki auto-ingest 모드 ──────────────────────────────────────
@@ -307,34 +298,12 @@ def _call_claude(pdf_path: Path) -> str:
         f"파일 경로(sources 필드에 이 값을 그대로 사용): {rel}\n\n{content}"
     )
 
-    result = subprocess.run(
-        [
-            CLAUDE_BIN,
-            "--system-prompt", _ingest_system_prompt(_get_existing_slugs()),
-            "--disallowedTools", "Write,Edit,Bash,TodoWrite,TodoRead",
-            "-p",
-        ],
-        input=prompt,
-        capture_output=True,
-        text=True,
-        timeout=600,
-    )
-
-    combined = result.stdout + result.stderr
-
-    # 세션 한도 감지 → 호출자가 대기 후 재시도하도록 예외 raise
-    limit_err = _parse_session_limit(combined)
-    if limit_err:
-        raise limit_err
-
-    if result.stdout.strip():
-        if result.returncode != 0 and result.stderr.strip():
-            print(f"  경고 (exit={result.returncode}): {result.stderr.strip()[:120]}", file=sys.stderr)
-        return result.stdout.strip()
-
-    if result.returncode != 0:
-        print(f"  오류: {result.stderr.strip()}", file=sys.stderr)
-    return ""
+    try:
+        output = llm_run(prompt, system=_ingest_system_prompt(_get_existing_slugs()),)
+        return output
+    except Exception as e:
+        print(f"  오류: {e}", file=sys.stderr)
+        return ""
 
 
 def _parse_output(text: str) -> tuple[list[tuple[Path, str]], list[str]]:
@@ -545,4 +514,9 @@ if __name__ == "__main__":
     elif sys.argv[1] == "--rebuild-index":
         rebuild_index()
     else:
-        print(run(sys.argv[1]))
+        path = Path(sys.argv[1])
+        content = read_file(path)
+        if content.strip():
+            prompt = f"다음 교육자료를 정리해줘.\n파일명: {path.name}\n\n{content}"
+            for chunk in llm_stream(prompt, system=EDIT_SYSTEM_PROMPT):
+                print(chunk, end="", flush=True)

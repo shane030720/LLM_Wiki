@@ -19,8 +19,10 @@ PAGES_DIR = WIKI_DIR / "pages"
 LOG_FILE = WIKI_DIR / "log.md"
 STATUS_FILE = WIKI_DIR / "ingest_status.json"
 
-CLAUDE_BIN = shutil.which("claude") or "/home/shane/.nvm/versions/node/v24.14.0/bin/claude"
 EDIT_AGENT = Path(__file__).parent / "edit_agent.py"
+
+sys.path.insert(0, str(PROJECT_DIR))
+from llm_provider import run as llm_run
 
 SYSTEM_PROMPT = """너는 LLM Wiki 유지보수 에이전트야.
 
@@ -223,17 +225,7 @@ def run(auto_ingest: bool = True) -> str:
         f"한국어로 유지보수 보고서를 작성해줘:\n\n{status_report}"
     )
 
-    result = subprocess.run(
-        [CLAUDE_BIN, "--system-prompt", SYSTEM_PROMPT, "-p", prompt],
-        capture_output=True,
-        text=True,
-        timeout=300,
-    )
-
-    if result.returncode != 0:
-        sys.exit(f"오류: {result.stderr.strip()}")
-
-    report = result.stdout.strip()
+    report = llm_run(prompt, system=SYSTEM_PROMPT)
     append_to_log(report)
     print(f"✓ log.md에 기록 완료", file=sys.stderr)
 
