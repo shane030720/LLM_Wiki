@@ -2,7 +2,7 @@
 
 ## 1. 도메인 개요
 
-LLM Wiki는 대학교 1학기 전공 강의자료를 자연어로 검색·학습·시험 준비할 수 있도록 설계된 **LLM 기반 개인 학습 위키**다.
+LLM Wiki는 강의자료를 자연어로 검색·학습·시험 준비할 수 있도록 설계된 **LLM 기반 개인 학습 위키**다.
 
 핵심 가치:
 - 교수의 슬라이드·강의노트를 학생이 직접 가공 없이 즉시 활용
@@ -19,7 +19,7 @@ LLM Wiki는 대학교 1학기 전공 강의자료를 자연어로 검색·학습
 | **학생** | 질문, 자료 열람, 퀴즈 풀기, Ingest 트리거 | 웹 브라우저 (localhost:8000) |
 | **Edit Agent** | 교육자료를 읽고 정리 노트·wiki 페이지 생성 | 파일 선택 시 자동 / `--ingest` |
 | **Wiki Agent** | 개념 질문에 강의자료 기반 답변 | 우측 패널 채팅 |
-| **Quiz Agent** | 문제 출제, 채점, 오답 노트 작성 | 우측 패널 퀴즈 탭 |
+| **Quiz Agent** | 문제 출제, 채점, 오답 노트, 대화형 요청 처리 | 우측 패널 퀴즈 탭 |
 | **Back Agent** | wiki 상태 점검, 미처리 파일 감지, AgentMEMO 기록 | 서버 시작 시 자동 실행 |
 | **AgentMEMO** | 에이전트 작업 메모 저장·조회 (SQLite) | /agentmemo 뷰어 |
 
@@ -42,10 +42,12 @@ LLM Wiki는 대학교 1학기 전공 강의자료를 자연어로 검색·학습
 - raw/ 파일 청크를 임베딩(`paraphrase-multilingual-MiniLM-L12-v2`)해 저장
 - 질문이 들어오면 코사인 유사도로 관련 청크 Top-K 검색 (RAG)
 
-### 3-4. 에이전트 실행 방식 (LiteLLM)
-- 모든 에이전트는 `llm_provider.py`를 통해 **LiteLLM API**를 호출
-- `.env`의 `LLM_MODEL` 한 줄로 Claude / OpenAI / Gemini / Ollama 전환
-- systemd 사용자 서비스(`llm-wiki.service`)로 상시 실행
+### 3-4. 에이전트 실행 방식 (llm_provider.py)
+- 모든 에이전트는 `llm_provider.py`의 공통 인터페이스(`run` / `stream` / `astream`)를 통해 LLM 호출
+- **CLI 방식**: `claude-cli` → `claude -p` subprocess (Claude Pro 구독, API 키 불필요) ← 기본값
+- **CLI 방식**: `gemini-cli` → `gemini -p` subprocess (Gemini CLI 무료 티어)
+- **API 방식**: LiteLLM → Claude API / OpenAI / Gemini API / Ollama 등 (API 키 필요)
+- `.env`의 `LLM_MODEL` 한 줄로 전환
 
 ### 3-5. AgentMEMO (작업 관찰)
 - Back Agent가 SQLite(`data/agentmemo.db`)에 점검 결과를 메모로 기록
@@ -78,7 +80,7 @@ Back Agent (서버 시작 시 자동 실행)
         │
         ▼
 Edit Agent
-  → PDF 파싱 (pypdf) → LiteLLM으로 wiki 페이지 생성
+  → PDF 파싱 (pypdf) → llm_provider로 wiki 페이지 생성
   → wiki/pages/{category}/*.md 저장
   → wiki/index.md, wiki/log.md 업데이트
   → ChromaDB 청크 임베딩 upsert
@@ -88,7 +90,7 @@ Edit Agent
 
 ```
 파일 클릭 → POST /api/agents/edit (스트리밍)
-  → edit_agent.py: pypdf 파싱 → LiteLLM 정리 → stdout 스트리밍
+  → edit_agent.py: pypdf 파싱 → llm_provider.stream() → stdout 스트리밍
   → 중앙 패널 마크다운 렌더링
   → currentNotes 저장 (Wiki·Quiz Agent 컨텍스트로 전달)
 ```
@@ -102,18 +104,20 @@ Edit Agent
   3순위: DuckDuckGo 웹 검색 (fallback)
         │
         ▼
-LiteLLM astream → 스트리밍 응답
+llm_provider.astream() → 스트리밍 응답
 ```
 
 ### 4-4. Quiz Agent 흐름
 
 ```
 [문제 생성] 클릭 → POST /api/agents/quiz/generate
-  → currentNotes → LiteLLM → QUIZ_ANSWER/QUIZ_EXPLAIN 마커 포함 출력
+  → currentNotes → quiz_agent.py → llm_provider.run()
+  → QUIZ_ANSWER/QUIZ_EXPLAIN 마커 포함 출력
   → preProcessQuiz(): 마커를 <details> 아코디언으로 변환 (정답 숨김)
 
-[채점하기] → POST /api/agents/quiz/grade
-  → notes + 문제 + 학생 답변 → LiteLLM → 오답 노트 출력
+[채점하기] 또는 대화형 요청 입력 → POST /api/agents/quiz/grade
+  → notes + 문제 + 학생 답변(또는 요청) → llm_provider.run()
+  → 오답 노트 출력 또는 새 문제 생성 (서술형/난이도 변경 등)
 ```
 
 ### 4-5. AgentMEMO 흐름
@@ -139,7 +143,7 @@ Back Agent 실행
 | 요청 유형 | 담당 에이전트 | 거절 시 안내 |
 |-----------|--------------|-------------|
 | 개념 설명, 원리 질문, 비교 분석 | Wiki Agent | "퀴즈는 📝 퀴즈 탭에서" (퀴즈 요청 시) |
-| 문제 출제, 채점, 오답 노트 | Quiz Agent | "🧠 위키 에이전트 탭에서 해주세요" (개념 질문 시) |
+| 문제 출제, 채점, 오답 노트, 서술형·난이도 변경 | Quiz Agent | "🧠 위키 에이전트 탭에서 해주세요" (개념 질문 시) |
 | 교육자료 정리, wiki 페이지 생성 | Edit Agent | — |
 | wiki 상태 점검, 미처리 파일 감지 | Back Agent | — |
 
@@ -151,7 +155,7 @@ Back Agent 실행
 |--------|------|
 | **프론트엔드** | 단일 HTML (wiki_gui.html), marked.js, 바닐라 JS |
 | **백엔드** | FastAPI (Python), uvicorn |
-| **LLM 추상화** | LiteLLM (`llm_provider.py`) — Claude/OpenAI/Gemini/Ollama |
+| **LLM 추상화** | llm_provider.py — CLI(claude-cli/gemini-cli) 또는 LiteLLM API |
 | **벡터 DB** | ChromaDB (로컬 퍼시스턴트) |
 | **임베딩** | sentence-transformers `paraphrase-multilingual-MiniLM-L12-v2` |
 | **PDF 파싱** | pypdf |
@@ -165,7 +169,7 @@ Back Agent 실행
 
 ## 7. 학기별 운영
 
-LLM Wiki는 **1학기 분량**을 한 서버 인스턴스가 담당한다.
+LLM Wiki는 **한 학기 분량**을 한 서버 인스턴스가 담당한다.
 
 ```bash
 # 새 학기 서버 생성 (포트만 다르게)
