@@ -30,9 +30,10 @@ class SyncRequest(BaseModel):
     subject: Optional[str] = None
     folder: Optional[str] = None
     dry_run: bool = False
+    provider: str = "onedrive"   # "onedrive" | "gdrive"
 
 
-def _do_sync(subject: Optional[str], folder: Optional[str], dry_run: bool):
+def _do_sync(subject: Optional[str], folder: Optional[str], dry_run: bool, provider: str):
     global _last_result
     from dotenv import load_dotenv
     load_dotenv(ROOT / ".env")
@@ -46,17 +47,15 @@ def _do_sync(subject: Optional[str], folder: Optional[str], dry_run: bool):
     else:
         folder_map = DEFAULT_FOLDER_MAP
 
-    result = run_all(folder_map, dry_run=dry_run)
+    result = run_all(folder_map, dry_run=dry_run, provider=provider)
     _last_result = result
 
 
 @router.post("/sync")
 async def trigger_sync(req: SyncRequest, background_tasks: BackgroundTasks):
     """동기화를 백그라운드로 시작합니다. 완료 여부는 /api/sync/log 로 확인."""
-    if not os.environ.get("ONEDRIVE_CLIENT_ID"):
-        raise HTTPException(status_code=400, detail="ONEDRIVE_CLIENT_ID가 .env에 설정되지 않았습니다.")
-    background_tasks.add_task(_do_sync, req.subject, req.folder, req.dry_run)
-    return {"message": "동기화 시작됨", "dry_run": req.dry_run}
+    background_tasks.add_task(_do_sync, req.subject, req.folder, req.dry_run, req.provider)
+    return {"message": "동기화 시작됨", "provider": req.provider, "dry_run": req.dry_run}
 
 
 @router.get("/sync/status")

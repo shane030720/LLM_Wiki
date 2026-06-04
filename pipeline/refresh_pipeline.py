@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 """
-OneDrive 자동 갱신 파이프라인
+클라우드 드라이브 자동 갱신 파이프라인 (OneDrive / Google Drive)
 
 동작:
-  1. OneDrive 지정 폴더의 파일 목록 조회
-  2. 로컬 eTag 해시와 비교 → 신규/변경된 파일만 선별
+  1. 지정 드라이브 폴더의 파일 목록 조회
+  2. 로컬 해시와 비교 → 신규/변경된 파일만 선별
   3. 변경 파일 다운로드 → raw/{subject}/ 저장
   4. 해당 파일만 재임베딩 (ChromaDB upsert)
   5. 결과를 data/refresh_log.jsonl 에 기록
 
 Usage:
-  python pipeline/refresh_pipeline.py
+  python pipeline/refresh_pipeline.py                          # OneDrive (기본)
+  python pipeline/refresh_pipeline.py --provider gdrive        # Google Drive
   python pipeline/refresh_pipeline.py --folder "/강의자료/자료구조" --subject 자료구조
-  python pipeline/refresh_pipeline.py --dry-run   # 다운로드 없이 변경 목록만 출력
+  python pipeline/refresh_pipeline.py --dry-run                # 다운로드 없이 변경 목록만 출력
+
+환경 변수:
+  DRIVE_PROVIDER=onedrive|gdrive   (기본: onedrive)
 """
 from __future__ import annotations
 
@@ -31,7 +35,19 @@ sys.path.insert(0, str(ROOT / "backend"))
 from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
 
-from pipeline.onedrive import list_files, download_file, load_hash_store, save_hash_store
+import pipeline.onedrive as _onedrive
+import pipeline.gdrive   as _gdrive
+
+_PROVIDERS = {
+    "onedrive": _onedrive,
+    "gdrive":   _gdrive,
+}
+
+def _get_provider(name: str):
+    name = name.lower()
+    if name not in _PROVIDERS:
+        raise ValueError(f"지원하지 않는 provider: '{name}'. 선택 가능: {list(_PROVIDERS)}")
+    return _PROVIDERS[name]
 from pipeline.parse import parse_file
 from pipeline.chunk import chunk_pages
 from pipeline.embed import get_embedder, embed_and_upsert
@@ -49,6 +65,8 @@ DEFAULT_FOLDER_MAP = {
     "데이터베이스":   "/데이터베이스",
     "시스템분석":     "/시스템 분석",
 }
+
+DEFAULT_PROVIDER = os.environ.get("DRIVE_PROVIDER", "onedrive")
 
 
 def _log(entry: dict) -> None:
@@ -79,16 +97,18 @@ def sync_folder(
     subject: str,
     hash_store: dict,
     dry_run: bool = False,
+    provider: str = "onedrive",
 ) -> dict:
     """
-    OneDrive 폴더 하나를 동기화.
+    클라우드 드라이브 폴더 하나를 동기화.
     변경 감지: size + mtime 조합.
     """
-    print(f"\n{'[DRY-RUN] ' if dry_run else ''}폴더 동기화: {folder} (과목={subject})")
+    drv = _get_provider(provider)
+    print(f"\n{'[DRY-RUN] ' if dry_run else ''}[{provider}] 폴더 동기화: {folder} (과목={subject})")
 
-    # 1. OneDrive 파일 목록
+    # 1. 드라이브 파일 목록
     try:
-        remote_files = list_files(folder)
+        remote_files = drv.list_files(folder)
     except Exception as e:
         print(f"  ❌ 폴더 조회 실패: {e}")
         return {"folder": folder, "subject": subject, "error": str(e)}
@@ -134,7 +154,7 @@ def sync_folder(
         print(f"  [{tag}] 다운로드: {item['name']} ...", end=" ", flush=True)
 
         try:
-            download_file(item["path"], str(dest_path))
+            drv.download_file(item["path"], str(dest_path))
             print("✓", end=" ", flush=True)
         except Exception as e:
             print(f"❌ 다운로드 실패: {e}")
@@ -174,18 +194,20 @@ def sync_folder(
 def run_all(
     folder_map: dict[str, str],
     dry_run: bool = False,
+    provider: str = "onedrive",
 ):
-    hash_store = load_hash_store()
+    drv = _get_provider(provider)
+    hash_store = drv.load_hash_store()
 
     started_at = datetime.now().isoformat()
     results = []
 
     for subject, folder in folder_map.items():
-        result = sync_folder(folder, subject, hash_store, dry_run=dry_run)
+        result = sync_folder(folder, subject, hash_store, dry_run=dry_run, provider=provider)
         results.append(result)
 
     if not dry_run:
-        save_hash_store(hash_store)
+        drv.save_hash_store(hash_store)
 
     summary = {
         "timestamp":  started_at,
@@ -200,7 +222,7 @@ def run_all(
     _log(summary)
 
     print(f"\n{'='*50}")
-    print(f"동기화 완료 {'(DRY-RUN)' if dry_run else ''}")
+    print(f"[{provider}] 동기화 완료 {'(DRY-RUN)' if dry_run else ''}")
     print(f"  신규: {summary['total_new']}  변경: {summary['total_changed']}  스킵: {summary['total_skipped']}")
     print(f"  로그: {REFRESH_LOG}")
     print(f"{'='*50}\n")
@@ -209,8 +231,11 @@ def run_all(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OneDrive 강의자료 자동 갱신 파이프라인")
-    parser.add_argument("--folder",   help="OneDrive 폴더 경로 (단일 과목 실행 시)")
+    parser = argparse.ArgumentParser(description="클라우드 드라이브 강의자료 자동 갱신 파이프라인")
+    parser.add_argument("--provider", default=DEFAULT_PROVIDER,
+                        choices=["onedrive", "gdrive"],
+                        help="클라우드 드라이브 선택 (기본: 환경변수 DRIVE_PROVIDER 또는 onedrive)")
+    parser.add_argument("--folder",   help="드라이브 폴더 경로 (단일 과목 실행 시)")
     parser.add_argument("--subject",  help="과목 이름 (--folder 와 함께 사용)")
     parser.add_argument("--dry-run",  action="store_true", help="변경 목록만 출력, 실제 다운로드/임베딩 없음")
     parser.add_argument("--show-log", action="store_true", help="최근 갱신 로그 출력")
@@ -221,7 +246,8 @@ def main():
             lines = REFRESH_LOG.read_text().strip().splitlines()
             for line in lines[-5:]:
                 entry = json.loads(line)
-                print(f"[{entry['timestamp'][:19]}] 신규:{entry.get('total_new',0)} 변경:{entry.get('total_changed',0)} 스킵:{entry.get('total_skipped',0)}")
+                print(f"[{entry['timestamp'][:19]}] [{entry.get('provider','onedrive')}] "
+                      f"신규:{entry.get('total_new',0)} 변경:{entry.get('total_changed',0)} 스킵:{entry.get('total_skipped',0)}")
         else:
             print("갱신 로그 없음")
         return
@@ -233,7 +259,7 @@ def main():
     else:
         folder_map = DEFAULT_FOLDER_MAP
 
-    run_all(folder_map, dry_run=args.dry_run)
+    run_all(folder_map, dry_run=args.dry_run, provider=args.provider)
 
 
 if __name__ == "__main__":
