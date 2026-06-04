@@ -23,6 +23,10 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 from llm_provider import astream as llm_astream, web_search as llm_web_search
 
+# claude-cli 등 PATH에 없는 바이너리를 subprocess에서 찾을 수 있도록 경로 보정
+_CLAUDE_BIN_DIR = os.path.expanduser("~/.nvm/versions/node/v24.14.0/bin")
+_AGENT_ENV = {**os.environ, "PATH": f"{_CLAUDE_BIN_DIR}:{os.environ.get('PATH', '')}"}
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
