@@ -1,23 +1,70 @@
 """
 AgentMEMO 뷰어 엔드포인트
 
-GET /agentmemo          — 다크 테마 HTML 뷰어 (새 탭에서 열림)
-GET /api/agentmemo/memos — JSON 메모 목록 (뷰어가 2초마다 폴링)
+GET  /agentmemo               — 다크 테마 HTML 뷰어 (새 탭에서 열림)
+GET  /api/agentmemo/memos     — JSON 메모 목록 (뷰어가 2초마다 폴링)
+POST /api/agentmemo/ingest    — edit_agent --ingest 백그라운드 실행
+POST /api/agentmemo/backcheck — Back Agent 점검 재실행
 """
 from __future__ import annotations
 
-import json
 import os
 import sqlite3
+import sys
+from datetime import datetime, UTC
 from pathlib import Path
 
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 
 router = APIRouter()
 
 ROOT = Path(__file__).resolve().parent.parent.parent.parent
+AGENTS_DIR = ROOT / "agents"
 _DB_PATH = Path(os.environ.get("AGENTMEMO_DB_PATH", str(ROOT / "data" / "agentmemo.db")))
+
+sys.path.insert(0, str(ROOT))
+
+
+# ── DB 헬퍼 ──────────────────────────────────────────────────────────────────
+
+def _now_iso() -> str:
+    return datetime.now(UTC).isoformat()
+
+def _db():
+    conn = sqlite3.connect(str(_DB_PATH))
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+def _ensure_schema():
+    _DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with _db() as conn:
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS memos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+                type TEXT NOT NULL, state TEXT NOT NULL,
+                header TEXT NOT NULL, contents TEXT NOT NULL DEFAULT ''
+            );
+        """)
+
+def _memo_create(header: str, contents: str = "", type: str = "IMPLEMENT", state: str = "IN_PROGRESS") -> int:
+    _ensure_schema()
+    now = _now_iso()
+    with _db() as conn:
+        cur = conn.execute(
+            "INSERT INTO memos (created_at,updated_at,type,state,header,contents) VALUES (?,?,?,?,?,?)",
+            (now, now, type, state, header, contents)
+        )
+        return cur.lastrowid
+
+def _memo_update(memo_id: int, contents: str, state: str):
+    with _db() as conn:
+        conn.execute(
+            "UPDATE memos SET updated_at=?, contents=?, state=? WHERE id=?",
+            (_now_iso(), contents, state, memo_id)
+        )
 
 
 def _read_memos() -> list[dict]:
@@ -38,6 +85,81 @@ def _read_memos() -> list[dict]:
 @router.get("/api/agentmemo/memos")
 def get_memos():
     return JSONResponse(_read_memos())
+
+
+@router.post("/api/agentmemo/ingest")
+async def trigger_ingest(background_tasks: BackgroundTasks):
+    """edit_agent --ingest 를 백그라운드로 실행하고 진행 상황을 메모로 기록."""
+    memo_id = _memo_create(
+        header=f"Ingest 실행 — {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        contents="**Ingest 시작** — 미처리 파일을 처리합니다...",
+        type="IMPLEMENT",
+        state="IN_PROGRESS",
+    )
+
+    def _run():
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, str(AGENTS_DIR / "edit_agent.py"), "--ingest"],
+            capture_output=True, text=True, timeout=1800,
+        )
+        ok = result.returncode == 0
+        summary = (result.stdout or result.stderr or "출력 없음").strip()[-800:]
+        _memo_update(
+            memo_id,
+            f"{'✅ 완료' if ok else '❌ 오류'}\n\n```\n{summary}\n```",
+            state="CLOSED" if ok else "OPEN",
+        )
+
+    background_tasks.add_task(_run)
+    return {"memo_id": memo_id, "message": "Ingest 시작됨 — AgentMEMO에서 진행 상황을 확인하세요."}
+
+
+@router.post("/api/agentmemo/backcheck")
+async def trigger_backcheck(background_tasks: BackgroundTasks):
+    """raw/ 파일 상태를 스캔해 메모로 기록 (LLM 호출 없음)."""
+    memo_id = _memo_create(
+        header=f"Back Agent 재점검 — {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        contents="**점검 시작** — wiki 상태를 확인합니다...",
+        type="PLAN",
+        state="IN_PROGRESS",
+    )
+
+    def _run():
+        import json as _json
+        raw_dir = ROOT / "raw"
+        status_file = ROOT / "wiki" / "ingest_status.json"
+
+        status = {}
+        if status_file.exists():
+            try:
+                status = _json.loads(status_file.read_text())
+            except Exception:
+                pass
+
+        new_files, ext = [], {".pdf", ".md", ".txt", ".pptx"}
+        if raw_dir.exists():
+            for f in sorted(raw_dir.rglob("*")):
+                if f.is_file() and f.suffix.lower() in ext and ":Zone.Identifier" not in f.name:
+                    rel = str(f.relative_to(ROOT))
+                    if rel not in status:
+                        new_files.append(rel)
+
+        lines = []
+        if new_files:
+            lines.append(f"**미처리 파일 {len(new_files)}개**")
+            for p in new_files[:10]:
+                lines.append(f"- `{p}`")
+            if len(new_files) > 10:
+                lines.append(f"- *(외 {len(new_files)-10}개)*")
+            lines.append("\n**→ Ingest 실행 버튼으로 처리할 수 있습니다.**")
+        else:
+            lines.append("✅ 미처리 파일 없음 — 모든 파일이 처리되었습니다.")
+
+        _memo_update(memo_id, "\n".join(lines), state="CLOSED")
+
+    background_tasks.add_task(_run)
+    return {"memo_id": memo_id, "message": "Back Agent 점검 시작됨."}
 
 
 @router.get("/agentmemo", response_class=HTMLResponse)
@@ -126,6 +248,18 @@ header {
 .md-content strong { color: #c0caf5; }
 .md-content blockquote { border-left: 3px solid #2a2b3d; padding-left: 10px; color: #7c88b0; }
 .empty-body { color: #4a5078; font-size: 12px; font-style: italic; }
+
+.actions { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.action-btn {
+  padding: 6px 14px; border-radius: 6px; border: none;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all .12s;
+}
+.action-btn:disabled { opacity: .5; cursor: not-allowed; }
+.ingest-btn  { background: #1e3a5f; color: #7aa2f7; }
+.ingest-btn:hover:not(:disabled)  { background: #2a4d7f; }
+.check-btn   { background: #22233a; color: #a9b1d6; border: 1px solid #2a2b3d; }
+.check-btn:hover:not(:disabled)   { background: #2d2e45; }
+.action-msg  { font-size: 11px; color: #9ece6a; }
 </style>
 </head>
 <body>
@@ -134,11 +268,23 @@ header {
     <div class="title">📋 AgentMEMO</div>
     <div class="subtitle">에이전트 작업 메모 뷰어</div>
   </div>
-  <div class="status">
-    <div class="pulse"></div>
-    <span id="status-text">연결 중...</span>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="status">
+      <div class="pulse"></div>
+      <span id="status-text">연결 중...</span>
+    </div>
   </div>
 </header>
+
+<div class="actions">
+  <button class="action-btn ingest-btn" onclick="runAction('ingest')" id="btn-ingest">
+    ⬇️ Ingest 실행
+  </button>
+  <button class="action-btn check-btn" onclick="runAction('backcheck')" id="btn-backcheck">
+    🔍 점검 재실행
+  </button>
+  <span id="action-msg" class="action-msg"></span>
+</div>
 
 <div class="filters">
   <button class="filter-btn active" data-filter="ALL" onclick="setFilter('ALL', this)">전체</button>
@@ -221,6 +367,26 @@ async function poll() {
 
 poll();
 setInterval(poll, 2000);
+
+async function runAction(type) {
+  const btnId = type === 'ingest' ? 'btn-ingest' : 'btn-backcheck';
+  const btn = document.getElementById(btnId);
+  const msg = document.getElementById('action-msg');
+  btn.disabled = true;
+  msg.textContent = '';
+
+  try {
+    const res = await fetch(`/api/agentmemo/${type}`, { method: 'POST' });
+    const data = await res.json();
+    msg.textContent = data.message || '실행 시작됨';
+    setTimeout(() => { msg.textContent = ''; }, 5000);
+  } catch {
+    msg.style.color = '#f7768e';
+    msg.textContent = '실행 실패';
+  }
+
+  setTimeout(() => { btn.disabled = false; }, 3000);
+}
 </script>
 </body>
 </html>
