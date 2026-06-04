@@ -238,7 +238,7 @@ raw/  →  Edit Agent  →  wiki/pages/  →  Wiki Agent  →  학생
 > "AGENTS.md 업데이트하고 knowledge_domain, PRD, README도 다시 써줘"
 
 **결정:** 총 6개 문서 체계
-1. `CLAUDE.md` — wiki 스키마
+1. `LLM.md` — wiki 스키마
 2. `AGENTS.md` — 현재 프롬프트 단일 진실 출처
 3. `knowledge_domain.md` — 지식 도메인 정의
 4. `PRD.md` — 제품 사양 + 의사결정 저널 (이 파일)

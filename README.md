@@ -338,7 +338,7 @@ curl http://localhost:8000/api/health
 
 | 문서 | 내용 |
 |------|------|
-| [`CLAUDE.md`](CLAUDE.md) | wiki 페이지 스키마 및 형식 규칙 |
+| [`LLM.md`](LLM.md) | wiki 페이지 스키마 및 형식 규칙 |
 | [`AGENTS.md`](AGENTS.md) | 현재 적용 중인 에이전트 시스템 프롬프트 (단일 진실 출처) |
 | [`knowledge_domain.md`](knowledge_domain.md) | 지식 도메인 범위, 과목 목록, 분류 체계 |
 | [`PRD.md`](PRD.md) | 제품 요구사항 + 에이전트 의사결정 저널 |

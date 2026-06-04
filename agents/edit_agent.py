@@ -140,7 +140,7 @@ def _ingest_system_prompt(existing_slugs: set[str] | None = None) -> str:
     else:
         existing_note = ""
 
-    return f"""너는 LLM Wiki 페이지 생성 에이전트야. 교육자료 PDF를 분석해서 CLAUDE.md 스키마에 맞는 wiki 페이지를 생성한다.
+    return f"""너는 LLM Wiki 페이지 생성 에이전트야. 교육자료 PDF를 분석해서 LLM.md 스키마에 맞는 wiki 페이지를 생성한다.
 
 오늘 날짜: {today}{existing_note}
 

@@ -1,7 +1,7 @@
 # AGENTS.md — LLM Wiki 에이전트 운영 플레이북
 
 이 파일은 LLM Wiki에서 동작하는 각 에이전트의 역할, 규칙, 출력 형식을 정의한다.
-세션 시작 전 반드시 `CLAUDE.md`(스키마)를 먼저 읽어야 한다.
+세션 시작 전 반드시 `LLM.md`(스키마)를 먼저 읽어야 한다.
 
 > **주의:** 이 파일은 실제 동작 중인 시스템 프롬프트의 단일 진실 출처(single source of truth)다.
 > 에이전트 프롬프트를 수정할 경우 반드시 이 파일과 해당 Python 파일을 동시에 업데이트해야 한다.
@@ -73,7 +73,7 @@
 ### wiki Auto-Ingest 모드 (`--ingest`)
 
 - `raw/` 하위 PDF를 재귀 탐색하여 아직 wiki `sources:` 에 등록되지 않은 파일만 처리
-- CLAUDE.md 스키마에 맞는 wiki 페이지(concepts / entities / syntheses)를 자동 생성
+- LLM.md 스키마에 맞는 wiki 페이지(concepts / entities / syntheses)를 자동 생성
 - `wiki/index.md` 에 새 행 추가, `wiki/log.md` 에 ingest 항목 기록
 - 이미 처리된 파일(`ingest_status.json` 확인)은 재처리하지 않음
 - Zone.Identifier 파일은 자동으로 건너뜀

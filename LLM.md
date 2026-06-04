@@ -19,7 +19,7 @@ This wiki is a **persistent, compounding knowledge base** maintained by LLMs on 
 |-------|----------|-----------|
 | `raw/` | Original source documents — **immutable** | Human only (add, never edit) |
 | `wiki/` | Synthesized markdown pages | LLM only (human never edits directly) |
-| `CLAUDE.md` | This schema | Human + LLM co-evolve |
+| `LLM.md` | This schema | Human + LLM co-evolve |
 | `AGENTS.md` | Operational playbook for LLM agents | Human + LLM co-evolve |
 
 ---
@@ -28,7 +28,7 @@ This wiki is a **persistent, compounding knowledge base** maintained by LLMs on 
 
 ```
 LLM_Wiki/
-├── CLAUDE.md                  ← this file (schema)
+├── LLM.md                  ← this file (schema)
 ├── AGENTS.md                  ← agent operational playbook
 ├── raw/                       ← immutable source documents
 │   └── *.pdf / *.md / *.txt
