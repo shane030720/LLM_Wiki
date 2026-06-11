@@ -1473,3 +1473,2247 @@ AGENTS.md를 확인하려 했지만 권한이 필요합니다. CLAUDE.md의 `log
 **권장 조치 순서:**
 1. 깨진 링크 중 참조 횟수가 많은 `[[udp]]`(3회), `[[dijkstra-algorithm]]`(2회), `[[linked-list]]`(2회), `[[tree]]`(2회), `[[functional-requirements]]`(2회) 페이지를 먼저 생성
 2. 이후 41개 raw 파일 일괄 ingest (데이터베이스 → 자료구조 → 알고리즘 → 컴퓨터네트워크 순서 권장)
+
+## [2026-06-04] back-check | 유지보수 점검
+
+---
+
+### 기본 현황
+
+| 항목 | 값 |
+|------|-----|
+| 점검 일자 | 2026-06-04 |
+| 전체 wiki 페이지 수 | 275개 |
+
+---
+
+### raw/ 신규 파일 (ingest 대기)
+
+총 **41개** 파일이 ingest 대기 중입니다.
+
+**📁 데이터베이스 (9개)**
+- `raw/데이터베이스/ER model.pdf`
+- `raw/데이터베이스/Indexing.pdf`
+- `raw/데이터베이스/Intermediate SQL.pdf`
+- `raw/데이터베이스/Intro to databases.pdf`
+- `raw/데이터베이스/Query Processing.pdf`
+- `raw/데이터베이스/Relational DB Design (1).pdf`
+- `raw/데이터베이스/Relational Model 2.pdf`
+- `raw/데이터베이스/SQL Basics.pdf`
+- `raw/데이터베이스/Storage and File Structure (1).pdf`
+
+**📁 알고리즘 (10개)**
+- `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf`
+- `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf`
+- `raw/알고리즘/CH04 정렬.pdf`
+- `raw/알고리즘/CH06 동적 집합과 탐색.pdf`
+- `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf`
+- `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf`
+- `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf`
+- `raw/알고리즘/CH10 동적 계획법.pdf`
+- `raw/알고리즘/CH11 스트링 매칭.pdf`
+- `raw/알고리즘/CH13 NP-완전 문제.pdf`
+
+**📁 자료구조 (21개)**
+- `raw/자료구조/(참고자료) Week13_Graphs (1).pdf`
+- `raw/자료구조/CSE2112_02_week01_2.pdf`
+- `raw/자료구조/CSE2112_02_week02_1.pdf`
+- `raw/자료구조/CSE2112_02_week03_1.pdf`
+- `raw/자료구조/CSE2112_02_week03_2.pdf`
+- `raw/자료구조/CSE2112_02_week04_1.pdf`
+- `raw/자료구조/CSE2112_02_week04_2.pdf`
+- `raw/자료구조/CSE2112_02_week05_1.pdf`
+- `raw/자료구조/CSE2112_02_week05_2.pdf`
+- `raw/자료구조/CSE2112_02_week06_1.pdf`
+- `raw/자료구조/CSE2112_02_week06_2.pdf`
+- `raw/자료구조/CSE2112_02_week07_1.pdf`
+- `raw/자료구조/CSE2112_02_week07_2.pdf`
+- `raw/자료구조/CSE2112_02_week09_2.pdf`
+- `raw/자료구조/CSE2112_02_week10_1.pdf`
+- `raw/자료구조/CSE2112_02_week10_2.pdf`
+- `raw/자료구조/CSE2112_02_week11_2.pdf`
+- `raw/자료구조/CSE2112_02_week12_1.pdf`
+- `raw/자료구조/CSE2112_02_week12_2.pdf`
+- `raw/자료구조/CSE2112_02_week13_1 (1).pdf`
+- `raw/자료구조/CSE2112_02_week13_2.pdf`
+
+**📁 컴퓨터네트워크 (1개)**
+- `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf`
+
+---
+
+### re-ingest 필요 (raw 갱신)
+
+- **이상 없음**
+
+---
+
+### 깨진 링크 (19건)
+
+| # | 출처 페이지 | 참조 오류 |
+|---|-------------|-----------|
+| 1 | `adjacency-matrix.md` | [[adjacency-list]] |
+| 2 | `all-pairs-shortest-paths.md` | [[dijkstra-algorithm]] |
+| 3 | `binary-tree-implementation.md` | [[linked-list]] |
+| 4 | `binary-tree-implementation.md` | [[array]] |
+| 5 | `binary-tree-traversal.md` | [[tree]] |
+| 6 | `binary-tree.md` | [[tree]] |
+| 7 | `relational-algebra.md` | [[tuple-relational-calculus]] |
+| 8 | `relational-algebra.md` | [[domain-relational-calculus]] |
+| 9 | `relational-model.md` | [[normalization-theory]] |
+| 10 | `stack.md` | [[linked-list]] |
+| 11 | `tcp-header.md` | [[udp]] |
+| 12 | `tcp-three-way-handshake.md` | [[tcp-options]] |
+| 13 | `transport-layer-demultiplexing.md` | [[udp]] |
+| 14 | `use-case-formats.md` | [[functional-requirements]] |
+| 15 | `use-case-formats.md` | [[test-case]] |
+| 16 | `use-case.md` | [[functional-requirements]] |
+| 17 | `use-case.md` | [[data-model]] |
+| 18 | `floyd-warshall-algorithm.md` | [[dijkstra-algorithm]] |
+| 19 | `tcp.md` | [[udp]] |
+
+> **패턴 분석:** [[udp]], [[linked-list]], [[dijkstra-algorithm]], [[functional-requirements]], [[tree]] 페이지가 아직 생성되지 않아 다수의 참조 오류가 발생하고 있습니다. 해당 페이지 우선 생성을 권장합니다.
+
+---
+
+### wiki 페이지 업데이트 필요
+
+- **이상 없음**
+
+---
+
+### 종합
+
+- **raw/ 신규 파일:** 업데이트 필요 — 41개 파일 ingest 대기 (데이터베이스 9, 알고리즘 10, 자료구조 21, 컴퓨터네트워크 1)
+- **오래된 wiki 페이지:** 이상 없음
+- **깨진 링크:** 업데이트 필요 — 19건 (10개 페이지에서 발생)
+- **종합:** **업데이트 필요 항목 60건** (신규 ingest 41건 + 깨진 링크 19건)
+
+## [2026-06-04] back-check | 유지보수 점검
+
+> 점검 기준일: 2026-06-04 | 전체 wiki 페이지: 275개
+
+---
+
+### raw/ 신규 파일 (ingest 대기)
+
+총 **41개** 파일이 ingest를 기다리고 있습니다.
+
+**📂 데이터베이스 (9건)**
+- `raw/데이터베이스/ER model.pdf`
+- `raw/데이터베이스/Indexing.pdf`
+- `raw/데이터베이스/Intermediate SQL.pdf`
+- `raw/데이터베이스/Intro to databases.pdf`
+- `raw/데이터베이스/Query Processing.pdf`
+- `raw/데이터베이스/Relational DB Design (1).pdf`
+- `raw/데이터베이스/Relational Model 2.pdf`
+- `raw/데이터베이스/SQL Basics.pdf`
+- `raw/데이터베이스/Storage and File Structure (1).pdf`
+
+**📂 알고리즘 (10건)**
+- `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf`
+- `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf`
+- `raw/알고리즘/CH04 정렬.pdf`
+- `raw/알고리즘/CH06 동적 집합과 탐색.pdf`
+- `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf`
+- `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf`
+- `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf`
+- `raw/알고리즘/CH10 동적 계획법.pdf`
+- `raw/알고리즘/CH11 스트링 매칭.pdf`
+- `raw/알고리즘/CH13 NP-완전 문제.pdf`
+
+**📂 자료구조 (21건)**
+- `raw/자료구조/(참고자료) Week13_Graphs (1).pdf`
+- `raw/자료구조/CSE2112_02_week01_2.pdf`
+- `raw/자료구조/CSE2112_02_week02_1.pdf`
+- `raw/자료구조/CSE2112_02_week03_1.pdf`
+- `raw/자료구조/CSE2112_02_week03_2.pdf`
+- `raw/자료구조/CSE2112_02_week04_1.pdf`
+- `raw/자료구조/CSE2112_02_week04_2.pdf`
+- `raw/자료구조/CSE2112_02_week05_1.pdf`
+- `raw/자료구조/CSE2112_02_week05_2.pdf`
+- `raw/자료구조/CSE2112_02_week06_1.pdf`
+- `raw/자료구조/CSE2112_02_week06_2.pdf`
+- `raw/자료구조/CSE2112_02_week07_1.pdf`
+- `raw/자료구조/CSE2112_02_week07_2.pdf`
+- `raw/자료구조/CSE2112_02_week09_2.pdf`
+- `raw/자료구조/CSE2112_02_week10_1.pdf`
+- `raw/자료구조/CSE2112_02_week10_2.pdf`
+- `raw/자료구조/CSE2112_02_week11_2.pdf`
+- `raw/자료구조/CSE2112_02_week12_1.pdf`
+- `raw/자료구조/CSE2112_02_week12_2.pdf`
+- `raw/자료구조/CSE2112_02_week13_1 (1).pdf`
+- `raw/자료구조/CSE2112_02_week13_2.pdf`
+
+**📂 컴퓨터네트워크 (1건)**
+- `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf`
+
+---
+
+### re-ingest 필요 (raw 갱신)
+
+- **이상 없음**
+
+---
+
+### 깨진 링크 (19건, 15개 파일)
+
+| # | 출처 페이지 | 깨진 참조 |
+|---|------------|----------|
+| 1 | `adjacency-matrix.md` | `[[adjacency-list]]` |
+| 2 | `all-pairs-shortest-paths.md` | `[[dijkstra-algorithm]]` |
+| 3 | `binary-tree-implementation.md` | `[[linked-list]]` |
+| 4 | `binary-tree-implementation.md` | `[[array]]` |
+| 5 | `binary-tree-traversal.md` | `[[tree]]` |
+| 6 | `binary-tree.md` | `[[tree]]` |
+| 7 | `relational-algebra.md` | `[[tuple-relational-calculus]]` |
+| 8 | `relational-algebra.md` | `[[domain-relational-calculus]]` |
+| 9 | `relational-model.md` | `[[normalization-theory]]` |
+| 10 | `stack.md` | `[[linked-list]]` |
+| 11 | `tcp-header.md` | `[[udp]]` |
+| 12 | `tcp-three-way-handshake.md` | `[[tcp-options]]` |
+| 13 | `transport-layer-demultiplexing.md` | `[[udp]]` |
+| 14 | `use-case-formats.md` | `[[functional-requirements]]` |
+| 15 | `use-case-formats.md` | `[[test-case]]` |
+| 16 | `use-case.md` | `[[functional-requirements]]` |
+| 17 | `use-case.md` | `[[data-model]]` |
+| 18 | `floyd-warshall-algorithm.md` | `[[dijkstra-algorithm]]` |
+| 19 | `tcp.md` | `[[udp]]` |
+
+> ⚠️ **반복 참조 오류 슬러그** (다수 페이지에서 공통 참조): `[[dijkstra-algorithm]]` (2건), `[[linked-list]]` (2건), `[[tree]]` (2건), `[[functional-requirements]]` (2건), `[[udp]]` (3건) — 해당 페이지 생성 시 일괄 해소 가능.
+
+---
+
+### wiki 페이지 업데이트 필요
+
+- **이상 없음**
+
+---
+
+### 종합
+
+| 항목 | 상태 | 건수 |
+|------|------|------|
+| raw/ 신규 파일 (ingest 대기) | 🔴 조치 필요 | 41건 |
+| re-ingest 필요 | ✅ 이상 없음 | 0건 |
+| 깨진 링크 | 🔴 조치 필요 | 19건 (15개 파일) |
+| wiki 페이지 업데이트 | ✅ 이상 없음 | 0건 |
+
+> **업데이트 필요 항목 총 60건** — raw 파일 41건 ingest 및 깨진 링크 19건 수정 필요.
+
+## [2026-06-04] back-check | 유지보수 점검
+
+> **대상 Wiki:** LLM Wiki | **총 페이지 수:** 275개
+
+---
+
+### 📥 raw/ 신규 파일 (ingest 대기)
+
+총 **41개** 파일이 ingest 대기 중입니다.
+
+| 카테고리 | 파일 수 | 파일 목록 |
+|---|---|---|
+| 데이터베이스 | 9 | `ER model.pdf`, `Indexing.pdf`, `Intermediate SQL.pdf`, `Intro to databases.pdf`, `Query Processing.pdf`, `Relational DB Design (1).pdf`, `Relational Model 2.pdf`, `SQL Basics.pdf`, `Storage and File Structure (1).pdf` |
+| 알고리즘 | 9 | `CH01 알고리즘과 문제의 분석 (2).pdf`, `CH02 자료의 추상화와 기본 자료 구조.pdf`, `CH04 정렬.pdf`, `CH06 동적 집합과 탐색.pdf`, `CH07 그래프와 그래프 운행 1.pdf`, `CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf`, `CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf`, `CH10 동적 계획법.pdf`, `CH11 스트링 매칭.pdf` ※ `CH13 NP-완전 문제.pdf` 포함 (10개) |
+| 자료구조 | 21 | `(참고자료) Week13_Graphs (1).pdf`, `CSE2112_02_week01_2.pdf` ~ `CSE2112_02_week13_2.pdf` (week 시리즈 20개) |
+| 컴퓨터네트워크 | 1 | `Week 01 Overview of Computer Networks (1).pdf` |
+
+> ※ 알고리즘 카테고리 파일은 CH01~CH13 중 일부 결번(CH03, CH05, CH12) 포함, 실제 10개
+
+---
+
+### 🔄 re-ingest 필요 (raw 갱신)
+
+- **이상 없음**
+
+---
+
+### 🔗 깨진 링크 (총 19건)
+
+| 출처 페이지 | 깨진 참조 슬러그 | 비고 |
+|---|---|---|
+| `adjacency-matrix.md` | `[[adjacency-list]]` | |
+| `all-pairs-shortest-paths.md` | `[[dijkstra-algorithm]]` | |
+| `binary-tree-implementation.md` | `[[linked-list]]` | |
+| `binary-tree-implementation.md` | `[[array]]` | |
+| `binary-tree-traversal.md` | `[[tree]]` | |
+| `binary-tree.md` | `[[tree]]` | |
+| `relational-algebra.md` | `[[tuple-relational-calculus]]` | |
+| `relational-algebra.md` | `[[domain-relational-calculus]]` | |
+| `relational-model.md` | `[[normalization-theory]]` | |
+| `stack.md` | `[[linked-list]]` | |
+| `tcp-header.md` | `[[udp]]` | |
+| `tcp-three-way-handshake.md` | `[[tcp-options]]` | |
+| `transport-layer-demultiplexing.md` | `[[udp]]` | |
+| `use-case-formats.md` | `[[functional-requirements]]` | |
+| `use-case-formats.md` | `[[test-case]]` | |
+| `use-case.md` | `[[functional-requirements]]` | |
+| `use-case.md` | `[[data-model]]` | |
+| `floyd-warshall-algorithm.md` | `[[dijkstra-algorithm]]` | |
+| `tcp.md` | `[[udp]]` | |
+
+**중복 참조 오류 슬러그 요약** (페이지 생성 또는 슬러그 수정 우선순위):
+
+| 슬러그 | 참조 횟수 | 관련 카테고리 |
+|---|---|---|
+| `[[udp]]` | 3회 | 컴퓨터네트워크 |
+| `[[dijkstra-algorithm]]` | 2회 | 알고리즘 |
+| `[[linked-list]]` | 2회 | 자료구조 |
+| `[[tree]]` | 2회 | 자료구조 |
+| `[[functional-requirements]]` | 2회 | 소프트웨어공학 |
+
+---
+
+### 📋 wiki 페이지 업데이트 필요
+
+- **이상 없음**
+
+---
+
+### 📊 종합
+
+| 항목 | 상태 | 건수 |
+|---|---|---|
+| raw/ 신규 파일 (ingest 대기) | ⚠️ 조치 필요 | 41건 |
+| re-ingest 필요 | ✅ 이상 없음 | 0건 |
+| 깨진 링크 | ⚠️ 조치 필요 | 19건 |
+| wiki 페이지 업데이트 | ✅ 이상 없음 | 0건 |
+
+> **업데이트 필요 항목 총 60건** — raw ingest 41건 처리 후 관련 슬러그 페이지 자동 생성 여부 재확인 권장. 깨진 링크 19건 중 `[[udp]]`, `[[dijkstra-algorithm]]`, `[[tree]]` 등 고빈도 슬러그는 우선 생성 검토 필요.
+
+## [2026-06-08] back-check | 유지보수 점검
+
+> **점검 범위:** wiki 페이지 275개 | **점검 일시:** 2026-06-08
+
+---
+
+### raw/ 신규 파일
+
+- **신규 ingest 대기:** 없음
+
+---
+
+### re-ingest 필요 (raw 갱신 반영 안 됨)
+
+총 **41건** — raw 수정 이후 wiki 페이지 미갱신
+
+#### 📂 데이터베이스 (9건)
+
+| raw 파일 | raw 수정일 | 경과일 |
+|---|---|---|
+| ER model.pdf | 2026-04-16 | **53일** |
+| Indexing.pdf | 2026-05-26 | 13일 |
+| Intermediate SQL.pdf | 2026-04-09 | **60일** |
+| Intro to databases.pdf | 2026-03-10 | **90일** ⚠️ |
+| Query Processing.pdf | 2026-05-28 | 11일 |
+| Relational DB Design (1).pdf | 2026-04-30 | 39일 |
+| Relational Model 2.pdf | 2026-03-19 | **81일** ⚠️ |
+| SQL Basics.pdf | 2026-04-23 | **46일** |
+| Storage and File Structure (1).pdf | 2026-05-12 | 27일 |
+
+#### 📂 알고리즘 (10건)
+
+| raw 파일 | raw 수정일 | 경과일 |
+|---|---|---|
+| CH01 알고리즘과 문제의 분석 (2).pdf | 2026-04-16 | **53일** |
+| CH02 자료의 추상화와 기본 자료 구조.pdf | 2026-04-16 | **53일** |
+| CH04 정렬.pdf | 2026-04-18 | **51일** |
+| CH06 동적 집합과 탐색.pdf | 2026-04-16 | **53일** |
+| CH07 그래프와 그래프 운행 1.pdf | 2026-05-06 | 33일 |
+| CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf | 2026-05-21 | 18일 |
+| CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf | 2026-05-14 | 25일 |
+| CH10 동적 계획법.pdf | 2026-05-27 | 12일 |
+| CH11 스트링 매칭.pdf | 2026-05-28 | 11일 |
+| CH13 NP-완전 문제.pdf | 2026-05-28 | 11일 |
+
+#### 📂 자료구조 (21건)
+
+| raw 파일 | raw 수정일 | 경과일 |
+|---|---|---|
+| (참고자료) Week13_Graphs (1).pdf | 2026-05-28 | 11일 |
+| CSE2112_02_week01_2.pdf | 2026-03-05 | **95일** ⚠️ |
+| CSE2112_02_week02_1.pdf | 2026-04-21 | 48일 |
+| CSE2112_02_week03_1.pdf | 2026-04-23 | **46일** |
+| CSE2112_02_week03_2.pdf | 2026-03-19 | **81일** ⚠️ |
+| CSE2112_02_week04_1.pdf | 2026-03-24 | **76일** ⚠️ |
+| CSE2112_02_week04_2.pdf | 2026-04-21 | 48일 |
+| CSE2112_02_week05_1.pdf | 2026-04-21 | 48일 |
+| CSE2112_02_week05_2.pdf | 2026-04-02 | **67일** ⚠️ |
+| CSE2112_02_week06_1.pdf | 2026-04-21 | 48일 |
+| CSE2112_02_week06_2.pdf | 2026-04-09 | **60일** |
+| CSE2112_02_week07_1.pdf | 2026-04-21 | 48일 |
+| CSE2112_02_week07_2.pdf | 2026-04-21 | 48일 |
+| CSE2112_02_week09_2.pdf | 2026-04-30 | 39일 |
+| CSE2112_02_week10_1.pdf | 2026-05-06 | 33일 |
+| CSE2112_02_week10_2.pdf | 2026-05-07 | 32일 |
+| CSE2112_02_week11_2.pdf | 2026-05-14 | 25일 |
+| CSE2112_02_week12_1.pdf | 2026-05-21 | 18일 |
+| CSE2112_02_week12_2.pdf | 2026-05-21 | 18일 |
+| CSE2112_02_week13_1 (1).pdf | 2026-05-26 | 13일 |
+| CSE2112_02_week13_2.pdf | 2026-05-28 | 11일 |
+
+#### 📂 컴퓨터네트워크 (1건)
+
+| raw 파일 | raw 수정일 | 경과일 |
+|---|---|---|
+| Week 01 Overview of Computer Networks (1).pdf | 2026-03-10 | **90일** ⚠️ |
+
+---
+
+### 깨진 링크
+
+총 **19건** — 존재하지 않는 슬러그 참조
+
+| 참조 출처 | 깨진 링크 | 비고 |
+|---|---|---|
+| [[adjacency-matrix]] | [[adjacency-list]] | 페이지 누락 |
+| [[all-pairs-shortest-paths]] | [[dijkstra-algorithm]] | 페이지 누락 |
+| [[binary-tree-implementation]] | [[linked-list]] | 페이지 누락 |
+| [[binary-tree-implementation]] | [[array]] | 페이지 누락 |
+| [[binary-tree-traversal]] | [[tree]] | 페이지 누락 |
+| [[binary-tree]] | [[tree]] | 페이지 누락 |
+| [[relational-algebra]] | [[tuple-relational-calculus]] | 페이지 누락 |
+| [[relational-algebra]] | [[domain-relational-calculus]] | 페이지 누락 |
+| [[relational-model]] | [[normalization-theory]] | 페이지 누락 |
+| [[stack]] | [[linked-list]] | 페이지 누락 |
+| [[tcp-header]] | [[udp]] | 페이지 누락 |
+| [[tcp-three-way-handshake]] | [[tcp-options]] | 페이지 누락 |
+| [[transport-layer-demultiplexing]] | [[udp]] | 페이지 누락 |
+| [[use-case-formats]] | [[functional-requirements]] | 페이지 누락 |
+| [[use-case-formats]] | [[test-case]] | 페이지 누락 |
+| [[use-case]] | [[functional-requirements]] | 페이지 누락 |
+| [[use-case]] | [[data-model]] | 페이지 누락 |
+| [[floyd-warshall-algorithm]] | [[dijkstra-algorithm]] | 페이지 누락 |
+| [[tcp]] | [[udp]] | 페이지 누락 |
+
+> **반복 누락 슬러그 요약:** `[[udp]]` (3곳), `[[dijkstra-algorithm]]` (2곳), `[[linked-list]]` (2곳), `[[tree]]` (2곳), `[[functional-requirements]]` (2곳) — 우선 생성 권장
+
+---
+
+### wiki 페이지 업데이트 필요
+
+- 이상 없음
+
+---
+
+### 종합
+
+| 항목 | 건수 | 상태 |
+|---|---|---|
+| raw/ 신규 파일 | 0건 | ✅ 이상 없음 |
+| re-ingest 필요 (90일↑ 초과) | 6건 | ⚠️ 긴급 |
+| re-ingest 필요 (전체) | 41건 | 🔄 처리 필요 |
+| 깨진 링크 | 19건 | 🔴 수정 필요 |
+| wiki 페이지 자체 업데이트 | 0건 | ✅ 이상 없음 |
+| **총 업데이트 필요 항목** | **60건** | **조치 필요** |
+
+## [2026-06-09] back-check | 유지보수 점검
+
+> **대상 위키:** LLM Wiki · 총 **275개** 페이지
+
+---
+
+### 1. raw/ 신규 파일 (ingest 대기)
+
+- **raw/ 신규 파일:** 없음
+
+---
+
+### 2. re-ingest 필요 (raw 갱신 — wiki 미반영)
+
+총 **41개** 파일의 원본이 갱신되었으나 wiki에 반영되지 않음.
+
+#### 📁 데이터베이스 (9건)
+
+| 파일 | raw 수정일 | 경과일 |
+|------|-----------|--------|
+| `raw/데이터베이스/Intro to databases.pdf` | 2026-03-10 | **91일** |
+| `raw/데이터베이스/Relational Model 2.pdf` | 2026-03-19 | **82일** |
+| `raw/데이터베이스/Intermediate SQL.pdf` | 2026-04-09 | **61일** |
+| `raw/데이터베이스/ER model.pdf` | 2026-04-16 | **54일** |
+| `raw/데이터베이스/SQL Basics.pdf` | 2026-04-23 | **47일** |
+| `raw/데이터베이스/Relational DB Design (1).pdf` | 2026-04-30 | **40일** |
+| `raw/데이터베이스/Storage and File Structure (1).pdf` | 2026-05-12 | **28일** |
+| `raw/데이터베이스/Indexing.pdf` | 2026-05-26 | **14일** |
+| `raw/데이터베이스/Query Processing.pdf` | 2026-05-28 | **12일** |
+
+#### 📁 알고리즘 (10건)
+
+| 파일 | raw 수정일 | 경과일 |
+|------|-----------|--------|
+| `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf` | 2026-04-16 | **54일** |
+| `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf` | 2026-04-16 | **54일** |
+| `raw/알고리즘/CH06 동적 집합과 탐색.pdf` | 2026-04-16 | **54일** |
+| `raw/알고리즘/CH04 정렬.pdf` | 2026-04-18 | **52일** |
+| `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf` | 2026-05-06 | **34일** |
+| `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf` | 2026-05-14 | **26일** |
+| `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf` | 2026-05-21 | **19일** |
+| `raw/알고리즘/CH10 동적 계획법.pdf` | 2026-05-27 | **13일** |
+| `raw/알고리즘/CH11 스트링 매칭.pdf` | 2026-05-28 | **12일** |
+| `raw/알고리즘/CH13 NP-완전 문제.pdf` | 2026-05-28 | **12일** |
+
+#### 📁 자료구조 (21건)
+
+| 파일 | raw 수정일 | 경과일 |
+|------|-----------|--------|
+| `raw/자료구조/CSE2112_02_week01_2.pdf` | 2026-03-05 | **96일** |
+| `raw/자료구조/CSE2112_02_week03_2.pdf` | 2026-03-19 | **82일** |
+| `raw/자료구조/CSE2112_02_week04_1.pdf` | 2026-03-24 | **77일** |
+| `raw/자료구조/CSE2112_02_week05_2.pdf` | 2026-04-02 | **68일** |
+| `raw/자료구조/CSE2112_02_week06_2.pdf` | 2026-04-09 | **61일** |
+| `raw/자료구조/CSE2112_02_week02_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week04_2.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week05_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week06_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week07_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week07_2.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week03_1.pdf` | 2026-04-23 | **47일** |
+| `raw/자료구조/CSE2112_02_week09_2.pdf` | 2026-04-30 | **40일** |
+| `raw/자료구조/CSE2112_02_week10_1.pdf` | 2026-05-06 | **34일** |
+| `raw/자료구조/CSE2112_02_week10_2.pdf` | 2026-05-07 | **33일** |
+| `raw/자료구조/CSE2112_02_week11_2.pdf` | 2026-05-14 | **26일** |
+| `raw/자료구조/CSE2112_02_week12_1.pdf` | 2026-05-21 | **19일** |
+| `raw/자료구조/CSE2112_02_week12_2.pdf` | 2026-05-21 | **19일** |
+| `raw/자료구조/CSE2112_02_week13_1 (1).pdf` | 2026-05-26 | **14일** |
+| `raw/자료구조/(참고자료) Week13_Graphs (1).pdf` | 2026-05-28 | **12일** |
+| `raw/자료구조/CSE2112_02_week13_2.pdf` | 2026-05-28 | **12일** |
+
+#### 📁 컴퓨터네트워크 (1건)
+
+| 파일 | raw 수정일 | 경과일 |
+|------|-----------|--------|
+| `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf` | 2026-03-10 | **91일** |
+
+---
+
+### 3. 깨진 링크
+
+총 **19건** (영향 파일 14개, 누락 슬러그 13개)
+
+| 출처 파일 | 깨진 참조 | 비고 |
+|-----------|-----------|------|
+| `adjacency-matrix.md` | [[adjacency-list]] | |
+| `all-pairs-shortest-paths.md` | [[dijkstra-algorithm]] | |
+| `binary-tree-implementation.md` | [[linked-list]] | |
+| `binary-tree-implementation.md` | [[array]] | |
+| `binary-tree-traversal.md` | [[tree]] | |
+| `binary-tree.md` | [[tree]] | |
+| `relational-algebra.md` | [[tuple-relational-calculus]] | |
+| `relational-algebra.md` | [[domain-relational-calculus]] | |
+| `relational-model.md` | [[normalization-theory]] | |
+| `stack.md` | [[linked-list]] | [[linked-list]] 중복 누락 |
+| `tcp-header.md` | [[udp]] | |
+| `tcp-three-way-handshake.md` | [[tcp-options]] | |
+| `transport-layer-demultiplexing.md` | [[udp]] | [[udp]] 중복 누락 |
+| `use-case-formats.md` | [[functional-requirements]] | |
+| `use-case-formats.md` | [[test-case]] | |
+| `use-case.md` | [[functional-requirements]] | [[functional-requirements]] 중복 누락 |
+| `use-case.md` | [[data-model]] | |
+| `floyd-warshall-algorithm.md` | [[dijkstra-algorithm]] | [[dijkstra-algorithm]] 중복 누락 |
+| `tcp.md` | [[udp]] | [[udp]] 중복 누락 |
+
+> ⚠️ **우선 생성 필요 슬러그:** `[[udp]]` (3곳 참조), `[[dijkstra-algorithm]]` (2곳), `[[linked-list]]` (2곳), `[[tree]]` (2곳), `[[functional-requirements]]` (2곳)
+
+---
+
+### 4. wiki 페이지 업데이트 필요
+
+- **wiki 페이지 업데이트:** 이상 없음
+
+---
+
+### 5. 종합
+
+| 항목 | 상태 |
+|------|------|
+| raw/ 신규 파일 (ingest 대기) | ✅ 이상 없음 |
+| re-ingest 필요 (raw 갱신) | ⚠️ **41건** |
+| 깨진 링크 | ⚠️ **19건** (누락 슬러그 13개) |
+| wiki 페이지 업데이트 | ✅ 이상 없음 |
+
+**업데이트 필요 항목 총 60건** — 자동 수정 없이 보고서만 작성함. 조치 필요.
+
+## [2026-06-09] back-check | 유지보수 점검
+
+---
+
+### 기본 현황
+
+| 항목 | 값 |
+|------|-----|
+| 점검 일자 | 2026-06-09 |
+| 전체 wiki 페이지 수 | 275개 |
+
+---
+
+### 세부 점검 결과
+
+---
+
+#### ① raw/ 신규 파일 (ingest 대기)
+
+- **raw/ 신규 파일:** 없음
+
+---
+
+#### ② 오래된 wiki 페이지 (re-ingest 필요 — raw 갱신 후 미반영)
+
+총 **41건** | 카테고리별 분류:
+
+**📂 데이터베이스 (9건)**
+
+| 파일명 | raw 수정일 | 지연 |
+|--------|-----------|------|
+| `raw/데이터베이스/Intro to databases.pdf` | 2026-03-10 | **91일** |
+| `raw/데이터베이스/Intermediate SQL.pdf` | 2026-04-09 | **61일** |
+| `raw/데이터베이스/ER model.pdf` | 2026-04-16 | **54일** |
+| `raw/데이터베이스/SQL Basics.pdf` | 2026-04-23 | **47일** |
+| `raw/데이터베이스/Relational DB Design (1).pdf` | 2026-04-30 | **40일** |
+| `raw/데이터베이스/Storage and File Structure (1).pdf` | 2026-05-12 | **28일** |
+| `raw/데이터베이스/Indexing.pdf` | 2026-05-26 | **14일** |
+| `raw/데이터베이스/Query Processing.pdf` | 2026-05-28 | **12일** |
+| `raw/데이터베이스/Relational Model 2.pdf` | 2026-03-19 | **82일** |
+
+**📂 알고리즘 (10건)**
+
+| 파일명 | raw 수정일 | 지연 |
+|--------|-----------|------|
+| `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf` | 2026-04-16 | **54일** |
+| `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf` | 2026-04-16 | **54일** |
+| `raw/알고리즘/CH04 정렬.pdf` | 2026-04-18 | **52일** |
+| `raw/알고리즘/CH06 동적 집합과 탐색.pdf` | 2026-04-16 | **54일** |
+| `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf` | 2026-05-06 | **34일** |
+| `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf` | 2026-05-14 | **26일** |
+| `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf` | 2026-05-21 | **19일** |
+| `raw/알고리즘/CH10 동적 계획법.pdf` | 2026-05-27 | **13일** |
+| `raw/알고리즘/CH11 스트링 매칭.pdf` | 2026-05-28 | **12일** |
+| `raw/알고리즘/CH13 NP-완전 문제.pdf` | 2026-05-28 | **12일** |
+
+**📂 자료구조 (21건)**
+
+| 파일명 | raw 수정일 | 지연 |
+|--------|-----------|------|
+| `raw/자료구조/CSE2112_02_week01_2.pdf` | 2026-03-05 | **96일** |
+| `raw/자료구조/CSE2112_02_week03_2.pdf` | 2026-03-19 | **82일** |
+| `raw/자료구조/CSE2112_02_week04_1.pdf` | 2026-03-24 | **77일** |
+| `raw/자료구조/CSE2112_02_week05_2.pdf` | 2026-04-02 | **68일** |
+| `raw/자료구조/CSE2112_02_week06_2.pdf` | 2026-04-09 | **61일** |
+| `raw/자료구조/CSE2112_02_week02_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week04_2.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week05_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week06_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week07_1.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week07_2.pdf` | 2026-04-21 | **49일** |
+| `raw/자료구조/CSE2112_02_week03_1.pdf` | 2026-04-23 | **47일** |
+| `raw/자료구조/CSE2112_02_week09_2.pdf` | 2026-04-30 | **40일** |
+| `raw/자료구조/CSE2112_02_week10_1.pdf` | 2026-05-06 | **34일** |
+| `raw/자료구조/CSE2112_02_week10_2.pdf` | 2026-05-07 | **33일** |
+| `raw/자료구조/CSE2112_02_week11_2.pdf` | 2026-05-14 | **26일** |
+| `raw/자료구조/CSE2112_02_week12_1.pdf` | 2026-05-21 | **19일** |
+| `raw/자료구조/CSE2112_02_week12_2.pdf` | 2026-05-21 | **19일** |
+| `raw/자료구조/CSE2112_02_week13_1 (1).pdf` | 2026-05-26 | **14일** |
+| `raw/자료구조/(참고자료) Week13_Graphs (1).pdf` | 2026-05-28 | **12일** |
+| `raw/자료구조/CSE2112_02_week13_2.pdf` | 2026-05-28 | **12일** |
+
+**📂 컴퓨터네트워크 (1건)**
+
+| 파일명 | raw 수정일 | 지연 |
+|--------|-----------|------|
+| `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf` | 2026-03-10 | **91일** |
+
+---
+
+#### ③ 깨진 링크
+
+총 **19건** | 파일별 분류:
+
+| 파일 (slug) | 참조 오류 슬러그 |
+|-------------|----------------|
+| `adjacency-matrix.md` | [[adjacency-list]] |
+| `all-pairs-shortest-paths.md` | [[dijkstra-algorithm]] |
+| `binary-tree-implementation.md` | [[linked-list]], [[array]] |
+| `binary-tree-traversal.md` | [[tree]] |
+| `binary-tree.md` | [[tree]] |
+| `relational-algebra.md` | [[tuple-relational-calculus]], [[domain-relational-calculus]] |
+| `relational-model.md` | [[normalization-theory]] |
+| `stack.md` | [[linked-list]] |
+| `tcp-header.md` | [[udp]] |
+| `tcp-three-way-handshake.md` | [[tcp-options]] |
+| `tcp.md` | [[udp]] |
+| `transport-layer-demultiplexing.md` | [[udp]] |
+| `use-case-formats.md` | [[functional-requirements]], [[test-case]] |
+| `use-case.md` | [[functional-requirements]], [[data-model]] |
+| `floyd-warshall-algorithm.md` | [[dijkstra-algorithm]] |
+
+> **반복 참조 오류 슬러그 요약** (미생성 페이지 우선 생성 권장):
+> - `[[udp]]` — 3곳에서 참조 (`tcp-header`, `tcp`, `transport-layer-demultiplexing`)
+> - `[[linked-list]]` — 2곳에서 참조 (`binary-tree-implementation`, `stack`)
+> - `[[tree]]` — 2곳에서 참조 (`binary-tree-traversal`, `binary-tree`)
+> - `[[dijkstra-algorithm]]` — 2곳에서 참조 (`all-pairs-shortest-paths`, `floyd-warshall-algorithm`)
+> - `[[functional-requirements]]` — 2곳에서 참조 (`use-case-formats`, `use-case`)
+
+---
+
+#### ④ wiki 페이지 직접 수정 필요
+
+- **wiki 페이지 업데이트 필요:** 이상 없음
+
+---
+
+### 종합 요약
+
+| 분류 | 건수 | 상태 |
+|------|------|------|
+| raw/ 신규 파일 (ingest 대기) | 0건 | ✅ 이상 없음 |
+| re-ingest 필요 (raw 갱신 미반영) | **41건** | ⚠️ 조치 필요 |
+| 깨진 링크 | **19건** | ⚠️ 조치 필요 |
+| wiki 페이지 직접 수정 | 0건 | ✅ 이상 없음 |
+| **합계** | **60건** | **⚠️ 업데이트 필요 항목 60건** |
+
+> **우선 처리 권장:** `자료구조/CSE2112_02_week01_2.pdf` (96일 지연), `컴퓨터네트워크/Week 01 Overview.pdf` 및 `데이터베이스/Intro to databases.pdf` (각 91일 지연) 순으로 re-ingest 처리 권장. 깨진 링크 중 `[[udp]]`, `[[linked-list]]`, `[[dijkstra-algorithm]]` 슬러그는 다수 페이지에서 참조 중이므로 페이지 생성 선행 권장.
+
+## [2026-06-11] back-check | 유지보수 점검
+
+> 점검 대상 wiki 페이지 수: **275개**
+
+---
+
+### raw/ 신규 파일
+- **이상 없음** (ingest 대기 항목 없음)
+
+---
+
+### 오래된 wiki 페이지 (re-ingest 필요) — 총 41건
+
+raw 파일이 갱신되었으나 wiki 페이지에 반영되지 않은 항목입니다.
+
+#### 📂 데이터베이스 (9건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/데이터베이스/Intro to databases.pdf` | 2026-03-10 | **93일** |
+| `raw/데이터베이스/Intermediate SQL.pdf` | 2026-04-09 | **63일** |
+| `raw/데이터베이스/ER model.pdf` | 2026-04-16 | **56일** |
+| `raw/데이터베이스/SQL Basics.pdf` | 2026-04-23 | **49일** |
+| `raw/데이터베이스/Relational DB Design (1).pdf` | 2026-04-30 | **42일** |
+| `raw/데이터베이스/Storage and File Structure (1).pdf` | 2026-05-12 | **30일** |
+| `raw/데이터베이스/Indexing.pdf` | 2026-05-26 | **16일** |
+| `raw/데이터베이스/Query Processing.pdf` | 2026-05-28 | **14일** |
+| `raw/데이터베이스/Relational Model 2.pdf` | 2026-03-19 | **84일** |
+
+#### 📂 알고리즘 (10건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH04 정렬.pdf` | 2026-04-18 | **54일** |
+| `raw/알고리즘/CH06 동적 집합과 탐색.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf` | 2026-05-06 | **36일** |
+| `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf` | 2026-05-14 | **28일** |
+| `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf` | 2026-05-21 | **21일** |
+| `raw/알고리즘/CH10 동적 계획법.pdf` | 2026-05-27 | **15일** |
+| `raw/알고리즘/CH11 스트링 매칭.pdf` | 2026-05-28 | **14일** |
+| `raw/알고리즘/CH13 NP-완전 문제.pdf` | 2026-05-28 | **14일** |
+
+#### 📂 자료구조 (21건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/자료구조/CSE2112_02_week01_2.pdf` | 2026-03-05 | **98일** |
+| `raw/자료구조/CSE2112_02_week03_2.pdf` | 2026-03-19 | **84일** |
+| `raw/자료구조/CSE2112_02_week04_1.pdf` | 2026-03-24 | **79일** |
+| `raw/자료구조/CSE2112_02_week05_2.pdf` | 2026-04-02 | **70일** |
+| `raw/자료구조/CSE2112_02_week06_2.pdf` | 2026-04-09 | **63일** |
+| `raw/자료구조/CSE2112_02_week02_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week04_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week05_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week06_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week03_1.pdf` | 2026-04-23 | **49일** |
+| `raw/자료구조/CSE2112_02_week09_2.pdf` | 2026-04-30 | **42일** |
+| `raw/자료구조/CSE2112_02_week10_1.pdf` | 2026-05-06 | **36일** |
+| `raw/자료구조/CSE2112_02_week10_2.pdf` | 2026-05-07 | **35일** |
+| `raw/자료구조/CSE2112_02_week11_2.pdf` | 2026-05-14 | **28일** |
+| `raw/자료구조/CSE2112_02_week12_1.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week12_2.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week13_1 (1).pdf` | 2026-05-26 | **16일** |
+| `raw/자료구조/CSE2112_02_week13_2.pdf` | 2026-05-28 | **14일** |
+| `raw/자료구조/(참고자료) Week13_Graphs (1).pdf` | 2026-05-28 | **14일** |
+
+#### 📂 컴퓨터네트워크 (1건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf` | 2026-03-10 | **93일** |
+
+---
+
+### 깨진 링크 — 총 19건
+
+wiki 페이지 내에서 존재하지 않는 슬러그를 참조하는 항목입니다.
+
+| 출처 페이지 | 깨진 참조 슬러그 |
+|---|---|
+| `adjacency-matrix.md` | `[[adjacency-list]]` |
+| `all-pairs-shortest-paths.md` | `[[dijkstra-algorithm]]` |
+| `binary-tree-implementation.md` | `[[linked-list]]` |
+| `binary-tree-implementation.md` | `[[array]]` |
+| `binary-tree-traversal.md` | `[[tree]]` |
+| `binary-tree.md` | `[[tree]]` |
+| `relational-algebra.md` | `[[tuple-relational-calculus]]` |
+| `relational-algebra.md` | `[[domain-relational-calculus]]` |
+| `relational-model.md` | `[[normalization-theory]]` |
+| `stack.md` | `[[linked-list]]` |
+| `tcp-header.md` | `[[udp]]` |
+| `tcp-three-way-handshake.md` | `[[tcp-options]]` |
+| `transport-layer-demultiplexing.md` | `[[udp]]` |
+| `use-case-formats.md` | `[[functional-requirements]]` |
+| `use-case-formats.md` | `[[test-case]]` |
+| `use-case.md` | `[[functional-requirements]]` |
+| `use-case.md` | `[[data-model]]` |
+| `floyd-warshall-algorithm.md` | `[[dijkstra-algorithm]]` |
+| `tcp.md` | `[[udp]]` |
+
+> ⚠️ `[[udp]]`, `[[linked-list]]`, `[[dijkstra-algorithm]]`, `[[functional-requirements]]`, `[[tree]]` 슬러그는 **복수의 페이지에서 반복 참조**되므로 우선 생성 권장
+
+---
+
+### 종합
+
+| 항목 | 상태 |
+|---|---|
+| raw/ 신규 파일 | ✅ 이상 없음 |
+| wiki 페이지 최신화 (re-ingest) | ⚠️ **41건 갱신 필요** (최장 98일 지연) |
+| 깨진 링크 | ⚠️ **19건 수정 필요** (7개 미생성 슬러그) |
+| wiki 페이지 직접 업데이트 | ✅ 이상 없음 |
+
+> **업데이트 필요 항목 합계: 60건** (re-ingest 41건 + 깨진 링크 19건)
+> 자동 수정은 수행하지 않았으며, 위 항목들은 수동 검토 후 반영 바랍니다.
+- 2026-06-11 | MCP | add | `concepts/test-page-mcp.md`
+- 2026-06-11 | MCP | update | `concepts/test-page-mcp.md`
+[hook] 18:40:08 file-changed
+[hook] 18:52:48 file-changed
+[hook] 18:52:54 file-changed
+[hook] 18:53:09 file-changed
+[hook] 18:53:39 file-changed
+[hook] 18:55:01 file-changed
+[hook] 19:13:03 file-changed
+[hook] 19:13:16 file-changed
+[hook] 19:13:30 file-changed
+[hook] 19:13:36 file-changed
+
+
+## [2026-06-11 19:13] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:13] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:17] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:18] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:20] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:21] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:27] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+## [2026-06-11] back-check | 유지보수 점검
+
+> **대상 Wiki:** LLM Wiki · 총 **275개** 페이지 점검
+
+---
+
+### raw/ 신규 파일 (ingest 대기)
+
+- **raw/ 신규 파일:** 없음
+
+---
+
+### 오래된 Wiki 페이지 (re-ingest 필요) — 총 41건
+
+raw 파일이 수정되었으나 Wiki가 갱신되지 않은 항목입니다.
+
+#### 📂 데이터베이스 (9건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/데이터베이스/Intro to databases.pdf` | 2026-03-10 | **93일** |
+| `raw/데이터베이스/Relational Model 2.pdf` | 2026-03-19 | **84일** |
+| `raw/데이터베이스/Intermediate SQL.pdf` | 2026-04-09 | **63일** |
+| `raw/데이터베이스/ER model.pdf` | 2026-04-16 | **56일** |
+| `raw/데이터베이스/SQL Basics.pdf` | 2026-04-23 | **49일** |
+| `raw/데이터베이스/Relational DB Design (1).pdf` | 2026-04-30 | **42일** |
+| `raw/데이터베이스/Storage and File Structure (1).pdf` | 2026-05-12 | **30일** |
+| `raw/데이터베이스/Indexing.pdf` | 2026-05-26 | **16일** |
+| `raw/데이터베이스/Query Processing.pdf` | 2026-05-28 | **14일** |
+
+#### 📂 알고리즘 (10건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH06 동적 집합과 탐색.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH04 정렬.pdf` | 2026-04-18 | **54일** |
+| `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf` | 2026-05-06 | **36일** |
+| `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf` | 2026-05-14 | **28일** |
+| `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf` | 2026-05-21 | **21일** |
+| `raw/알고리즘/CH10 동적 계획법.pdf` | 2026-05-27 | **15일** |
+| `raw/알고리즘/CH11 스트링 매칭.pdf` | 2026-05-28 | **14일** |
+| `raw/알고리즘/CH13 NP-완전 문제.pdf` | 2026-05-28 | **14일** |
+
+#### 📂 자료구조 (21건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/자료구조/CSE2112_02_week01_2.pdf` | 2026-03-05 | **98일** |
+| `raw/자료구조/CSE2112_02_week03_2.pdf` | 2026-03-19 | **84일** |
+| `raw/자료구조/CSE2112_02_week04_1.pdf` | 2026-03-24 | **79일** |
+| `raw/자료구조/CSE2112_02_week05_2.pdf` | 2026-04-02 | **70일** |
+| `raw/자료구조/CSE2112_02_week06_2.pdf` | 2026-04-09 | **63일** |
+| `raw/자료구조/CSE2112_02_week02_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week04_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week05_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week06_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week03_1.pdf` | 2026-04-23 | **49일** |
+| `raw/자료구조/CSE2112_02_week09_2.pdf` | 2026-04-30 | **42일** |
+| `raw/자료구조/CSE2112_02_week10_1.pdf` | 2026-05-06 | **36일** |
+| `raw/자료구조/CSE2112_02_week10_2.pdf` | 2026-05-07 | **35일** |
+| `raw/자료구조/CSE2112_02_week11_2.pdf` | 2026-05-14 | **28일** |
+| `raw/자료구조/CSE2112_02_week12_1.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week12_2.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week13_1 (1).pdf` | 2026-05-26 | **16일** |
+| `raw/자료구조/CSE2112_02_week13_2.pdf` | 2026-05-28 | **14일** |
+| `raw/자료구조/(참고자료) Week13_Graphs (1).pdf` | 2026-05-28 | **14일** |
+
+#### 📂 컴퓨터네트워크 (1건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf` | 2026-03-10 | **93일** |
+
+---
+
+### 깨진 링크 — 총 19건
+
+| 페이지 | 깨진 참조 |
+|---|---|
+| `adjacency-matrix.md` | [[adjacency-list]] |
+| `all-pairs-shortest-paths.md` | [[dijkstra-algorithm]] |
+| `binary-tree-implementation.md` | [[linked-list]] |
+| `binary-tree-implementation.md` | [[array]] |
+| `binary-tree-traversal.md` | [[tree]] |
+| `binary-tree.md` | [[tree]] |
+| `floyd-warshall-algorithm.md` | [[dijkstra-algorithm]] |
+| `relational-algebra.md` | [[tuple-relational-calculus]] |
+| `relational-algebra.md` | [[domain-relational-calculus]] |
+| `relational-model.md` | [[normalization-theory]] |
+| `stack.md` | [[linked-list]] |
+| `tcp-header.md` | [[udp]] |
+| `tcp-three-way-handshake.md` | [[tcp-options]] |
+| `tcp.md` | [[udp]] |
+| `transport-layer-demultiplexing.md` | [[udp]] |
+| `use-case-formats.md` | [[functional-requirements]] |
+| `use-case-formats.md` | [[test-case]] |
+| `use-case.md` | [[functional-requirements]] |
+| `use-case.md` | [[data-model]] |
+
+> ⚠️ **반복 참조 오류 주목:** `[[dijkstra-algorithm]]` (2건), `[[linked-list]]` (2건), `[[udp]]` (3건), `[[functional-requirements]]` (2건) — 해당 페이지 자체가 누락되었을 가능성 높음. 페이지 생성 우선 권장.
+
+---
+
+### Wiki 페이지 업데이트
+
+- **wiki 페이지 직접 수정 필요:** 이상 없음
+
+---
+
+### 종합
+
+- **raw/ 신규 파일:** 없음
+- **오래된 wiki 페이지:** re-ingest 필요 **41건** (최대 지연 98일 · `CSE2112_02_week01_2.pdf`)
+- **깨진 링크:** **19건** (영향 페이지 13개)
+- **종합:** ⚠️ **업데이트 필요 항목 60건** — re-ingest 41건 + 깨진 링크 19건
+
+## [2026-06-11] back-check | 유지보수 점검
+
+> 점검 기준일: 2026-06-11 · 전체 wiki 페이지: **275개**
+
+---
+
+### raw/ 신규 파일
+**없음**
+
+---
+
+### re-ingest 필요 (raw 갱신 후 wiki 미반영)
+
+총 **41개** 파일에서 raw가 갱신되었으나 wiki 페이지가 업데이트되지 않음.
+
+#### 📁 데이터베이스 (9건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/데이터베이스/Intro to databases.pdf` | 2026-03-10 | **93일** |
+| `raw/데이터베이스/Relational Model 2.pdf` | 2026-03-19 | **84일** |
+| `raw/데이터베이스/Intermediate SQL.pdf` | 2026-04-09 | **63일** |
+| `raw/데이터베이스/ER model.pdf` | 2026-04-16 | **56일** |
+| `raw/데이터베이스/SQL Basics.pdf` | 2026-04-23 | **49일** |
+| `raw/데이터베이스/Relational DB Design (1).pdf` | 2026-04-30 | **42일** |
+| `raw/데이터베이스/Storage and File Structure (1).pdf` | 2026-05-12 | **30일** |
+| `raw/데이터베이스/Indexing.pdf` | 2026-05-26 | **16일** |
+| `raw/데이터베이스/Query Processing.pdf` | 2026-05-28 | **14일** |
+
+#### 📁 알고리즘 (10건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH06 동적 집합과 탐색.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH04 정렬.pdf` | 2026-04-18 | **54일** |
+| `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf` | 2026-05-06 | **36일** |
+| `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf` | 2026-05-14 | **28일** |
+| `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf` | 2026-05-21 | **21일** |
+| `raw/알고리즘/CH10 동적 계획법.pdf` | 2026-05-27 | **15일** |
+| `raw/알고리즘/CH11 스트링 매칭.pdf` | 2026-05-28 | **14일** |
+| `raw/알고리즘/CH13 NP-완전 문제.pdf` | 2026-05-28 | **14일** |
+
+#### 📁 자료구조 (21건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/자료구조/CSE2112_02_week01_2.pdf` | 2026-03-05 | **98일** |
+| `raw/자료구조/CSE2112_02_week03_2.pdf` | 2026-03-19 | **84일** |
+| `raw/자료구조/CSE2112_02_week04_1.pdf` | 2026-03-24 | **79일** |
+| `raw/자료구조/CSE2112_02_week05_2.pdf` | 2026-04-02 | **70일** |
+| `raw/자료구조/CSE2112_02_week06_2.pdf` | 2026-04-09 | **63일** |
+| `raw/자료구조/CSE2112_02_week02_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week04_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week05_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week06_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week03_1.pdf` | 2026-04-23 | **49일** |
+| `raw/자료구조/CSE2112_02_week09_2.pdf` | 2026-04-30 | **42일** |
+| `raw/자료구조/CSE2112_02_week10_1.pdf` | 2026-05-06 | **36일** |
+| `raw/자료구조/CSE2112_02_week10_2.pdf` | 2026-05-07 | **35일** |
+| `raw/자료구조/CSE2112_02_week11_2.pdf` | 2026-05-14 | **28일** |
+| `raw/자료구조/CSE2112_02_week12_1.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week12_2.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week13_1 (1).pdf` | 2026-05-26 | **16일** |
+| `raw/자료구조/CSE2112_02_week13_2.pdf` | 2026-05-28 | **14일** |
+| `raw/자료구조/(참고자료) Week13_Graphs (1).pdf` | 2026-05-28 | **14일** |
+
+#### 📁 컴퓨터네트워크 (1건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf` | 2026-03-10 | **93일** |
+
+---
+
+### 깨진 링크
+
+총 **19건** 참조 오류 감지.
+
+| 출처 페이지 | 깨진 링크 | 분류 |
+|---|---|---|
+| `[[adjacency-matrix]]` | `[[adjacency-list]]` | 자료구조 |
+| `[[all-pairs-shortest-paths]]` | `[[dijkstra-algorithm]]` | 알고리즘 |
+| `[[binary-tree-implementation]]` | `[[linked-list]]` | 자료구조 |
+| `[[binary-tree-implementation]]` | `[[array]]` | 자료구조 |
+| `[[binary-tree-traversal]]` | `[[tree]]` | 자료구조 |
+| `[[binary-tree]]` | `[[tree]]` | 자료구조 |
+| `[[relational-algebra]]` | `[[tuple-relational-calculus]]` | 데이터베이스 |
+| `[[relational-algebra]]` | `[[domain-relational-calculus]]` | 데이터베이스 |
+| `[[relational-model]]` | `[[normalization-theory]]` | 데이터베이스 |
+| `[[stack]]` | `[[linked-list]]` | 자료구조 |
+| `[[tcp-header]]` | `[[udp]]` | 컴퓨터네트워크 |
+| `[[tcp-three-way-handshake]]` | `[[tcp-options]]` | 컴퓨터네트워크 |
+| `[[transport-layer-demultiplexing]]` | `[[udp]]` | 컴퓨터네트워크 |
+| `[[use-case-formats]]` | `[[functional-requirements]]` | 소프트웨어공학 |
+| `[[use-case-formats]]` | `[[test-case]]` | 소프트웨어공학 |
+| `[[use-case]]` | `[[functional-requirements]]` | 소프트웨어공학 |
+| `[[use-case]]` | `[[data-model]]` | 소프트웨어공학 |
+| `[[floyd-warshall-algorithm]]` | `[[dijkstra-algorithm]]` | 알고리즘 |
+| `[[tcp]]` | `[[udp]]` | 컴퓨터네트워크 |
+
+> ⚠️ `[[dijkstra-algorithm]]`·`[[linked-list]]`·`[[udp]]`·`[[tree]]`·`[[functional-requirements]]` 등 **미생성 페이지**가 다수 참조되고 있음. 해당 slug의 wiki 페이지 신규 생성 또는 링크 수정 필요.
+
+---
+
+### wiki 페이지 업데이트 필요
+**이상 없음**
+
+---
+
+### 종합
+
+- **raw/ 신규 파일:** 없음
+- **re-ingest 필요:** **41건** (자료구조 21 · 알고리즘 10 · 데이터베이스 9 · 컴퓨터네트워크 1) — 최장 지연 98일 (`week01_2`)
+- **깨진 링크:** **19건** (4개 과목 영역에 걸쳐 분포)
+- **wiki 페이지 직접 업데이트:** 이상 없음
+- **업데이트 필요 항목 총계: 60건** ⚠️
+
+
+## [2026-06-11 19:30] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:31] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:32] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:34] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:35] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 19:39] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 20:38] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 40 / synthesis 10)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+## [2026-06-11] back-check | 유지보수 점검
+
+> 점검 대상: LLM Wiki 전체 (275개 페이지)
+
+---
+
+- **raw/ 신규 파일:** 없음
+
+- **re-ingest 필요 (raw 갱신 후 미반영):** 41건
+
+  | 카테고리 | 파일명 | raw 수정일 | 지연 |
+  |---|---|---|---|
+  | 데이터베이스 | ER model.pdf | 2026-04-16 | 56일 |
+  | 데이터베이스 | Indexing.pdf | 2026-05-26 | 16일 |
+  | 데이터베이스 | Intermediate SQL.pdf | 2026-04-09 | 63일 |
+  | 데이터베이스 | Intro to databases.pdf | 2026-03-10 | **93일** |
+  | 데이터베이스 | Query Processing.pdf | 2026-05-28 | 14일 |
+  | 데이터베이스 | Relational DB Design (1).pdf | 2026-04-30 | 42일 |
+  | 데이터베이스 | Relational Model 2.pdf | 2026-03-19 | **84일** |
+  | 데이터베이스 | SQL Basics.pdf | 2026-04-23 | 49일 |
+  | 데이터베이스 | Storage and File Structure (1).pdf | 2026-05-12 | 30일 |
+  | 알고리즘 | CH01 알고리즘과 문제의 분석 (2).pdf | 2026-04-16 | 56일 |
+  | 알고리즘 | CH02 자료의 추상화와 기본 자료 구조.pdf | 2026-04-16 | 56일 |
+  | 알고리즘 | CH04 정렬.pdf | 2026-04-18 | 54일 |
+  | 알고리즘 | CH06 동적 집합과 탐색.pdf | 2026-04-16 | 56일 |
+  | 알고리즘 | CH07 그래프와 그래프 운행 1.pdf | 2026-05-06 | 36일 |
+  | 알고리즘 | CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf | 2026-05-21 | 21일 |
+  | 알고리즘 | CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf | 2026-05-14 | 28일 |
+  | 알고리즘 | CH10 동적 계획법.pdf | 2026-05-27 | 15일 |
+  | 알고리즘 | CH11 스트링 매칭.pdf | 2026-05-28 | 14일 |
+  | 알고리즘 | CH13 NP-완전 문제.pdf | 2026-05-28 | 14일 |
+  | 자료구조 | (참고자료) Week13_Graphs (1).pdf | 2026-05-28 | 14일 |
+  | 자료구조 | CSE2112_02_week01_2.pdf | 2026-03-05 | **98일** |
+  | 자료구조 | CSE2112_02_week02_1.pdf | 2026-04-21 | 51일 |
+  | 자료구조 | CSE2112_02_week03_1.pdf | 2026-04-23 | 49일 |
+  | 자료구조 | CSE2112_02_week03_2.pdf | 2026-03-19 | **84일** |
+  | 자료구조 | CSE2112_02_week04_1.pdf | 2026-03-24 | **79일** |
+  | 자료구조 | CSE2112_02_week04_2.pdf | 2026-04-21 | 51일 |
+  | 자료구조 | CSE2112_02_week05_1.pdf | 2026-04-21 | 51일 |
+  | 자료구조 | CSE2112_02_week05_2.pdf | 2026-04-02 | **70일** |
+  | 자료구조 | CSE2112_02_week06_1.pdf | 2026-04-21 | 51일 |
+  | 자료구조 | CSE2112_02_week06_2.pdf | 2026-04-09 | 63일 |
+  | 자료구조 | CSE2112_02_week07_1.pdf | 2026-04-21 | 51일 |
+  | 자료구조 | CSE2112_02_week07_2.pdf | 2026-04-21 | 51일 |
+  | 자료구조 | CSE2112_02_week09_2.pdf | 2026-04-30 | 42일 |
+  | 자료구조 | CSE2112_02_week10_1.pdf | 2026-05-06 | 36일 |
+  | 자료구조 | CSE2112_02_week10_2.pdf | 2026-05-07 | 35일 |
+  | 자료구조 | CSE2112_02_week11_2.pdf | 2026-05-14 | 28일 |
+  | 자료구조 | CSE2112_02_week12_1.pdf | 2026-05-21 | 21일 |
+  | 자료구조 | CSE2112_02_week12_2.pdf | 2026-05-21 | 21일 |
+  | 자료구조 | CSE2112_02_week13_1 (1).pdf | 2026-05-26 | 16일 |
+  | 자료구조 | CSE2112_02_week13_2.pdf | 2026-05-28 | 14일 |
+  | 컴퓨터네트워크 | Week 01 Overview of Computer Networks (1).pdf | 2026-03-10 | **93일** |
+
+- **오래된 wiki 페이지 (직접 수정 필요):** 이상 없음
+
+- **깨진 링크:** 19건 (미생성 슬러그 13종)
+
+  | 참조 위치 | 깨진 링크 | 비고 |
+  |---|---|---|
+  | [[adjacency-matrix]] | [[adjacency-list]] | 슬러그 미존재 |
+  | [[all-pairs-shortest-paths]] | [[dijkstra-algorithm]] | 슬러그 미존재 (2곳 참조) |
+  | [[binary-tree-implementation]] | [[linked-list]] | 슬러그 미존재 (2곳 참조) |
+  | [[binary-tree-implementation]] | [[array]] | 슬러그 미존재 |
+  | [[binary-tree-traversal]] | [[tree]] | 슬러그 미존재 (2곳 참조) |
+  | [[binary-tree]] | [[tree]] | ↑ 동일 |
+  | [[relational-algebra]] | [[tuple-relational-calculus]] | 슬러그 미존재 |
+  | [[relational-algebra]] | [[domain-relational-calculus]] | 슬러그 미존재 |
+  | [[relational-model]] | [[normalization-theory]] | 슬러그 미존재 |
+  | [[stack]] | [[linked-list]] | ↑ 동일 |
+  | [[tcp-header]] | [[udp]] | 슬러그 미존재 (3곳 참조) |
+  | [[tcp-three-way-handshake]] | [[tcp-options]] | 슬러그 미존재 |
+  | [[transport-layer-demultiplexing]] | [[udp]] | ↑ 동일 |
+  | [[use-case-formats]] | [[functional-requirements]] | 슬러그 미존재 (2곳 참조) |
+  | [[use-case-formats]] | [[test-case]] | 슬러그 미존재 |
+  | [[use-case]] | [[functional-requirements]] | ↑ 동일 |
+  | [[use-case]] | [[data-model]] | 슬러그 미존재 |
+  | [[floyd-warshall-algorithm]] | [[dijkstra-algorithm]] | ↑ 동일 |
+  | [[tcp]] | [[udp]] | ↑ 동일 |
+
+- **종합:** **업데이트 필요 항목 60건**
+  - re-ingest 필요: 41건 (데이터베이스 9, 알고리즘 10, 자료구조 21, 컴퓨터네트워크 1)
+  - 깨진 링크 해소 필요: 19건 (미생성 슬러그 13종 — `[[udp]]`, `[[linked-list]]`, `[[dijkstra-algorithm]]`, `[[tree]]`, `[[functional-requirements]]` 등 우선 생성 권장)
+  - ⚠️ 특히 지연 60일 이상 파일 7건은 즉시 re-ingest 요망
+
+
+## [2026-06-11 20:44] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+## [2026-06-11] back-check | 유지보수 점검
+
+---
+
+- **raw/ 신규 파일:** 없음
+
+- **re-ingest 필요 (wiki 갱신 대기):** 41건
+
+  **[데이터베이스] — 9건**
+  | raw 파일 | raw 수정일 | 경과일 |
+  |---|---|---|
+  | raw/데이터베이스/Intro to databases.pdf | 2026-03-10 | 93일 |
+  | raw/데이터베이스/Relational Model 2.pdf | 2026-03-19 | 84일 |
+  | raw/데이터베이스/Intermediate SQL.pdf | 2026-04-09 | 63일 |
+  | raw/데이터베이스/ER model.pdf | 2026-04-16 | 56일 |
+  | raw/데이터베이스/SQL Basics.pdf | 2026-04-23 | 49일 |
+  | raw/데이터베이스/Relational DB Design (1).pdf | 2026-04-30 | 42일 |
+  | raw/데이터베이스/Storage and File Structure (1).pdf | 2026-05-12 | 30일 |
+  | raw/데이터베이스/Indexing.pdf | 2026-05-26 | 16일 |
+  | raw/데이터베이스/Query Processing.pdf | 2026-05-28 | 14일 |
+
+  **[알고리즘] — 10건**
+  | raw 파일 | raw 수정일 | 경과일 |
+  |---|---|---|
+  | raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf | 2026-04-16 | 56일 |
+  | raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf | 2026-04-16 | 56일 |
+  | raw/알고리즘/CH06 동적 집합과 탐색.pdf | 2026-04-16 | 56일 |
+  | raw/알고리즘/CH04 정렬.pdf | 2026-04-18 | 54일 |
+  | raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf | 2026-05-06 | 36일 |
+  | raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf | 2026-05-14 | 28일 |
+  | raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf | 2026-05-21 | 21일 |
+  | raw/알고리즘/CH10 동적 계획법.pdf | 2026-05-27 | 15일 |
+  | raw/알고리즘/CH11 스트링 매칭.pdf | 2026-05-28 | 14일 |
+  | raw/알고리즘/CH13 NP-완전 문제.pdf | 2026-05-28 | 14일 |
+
+  **[자료구조] — 21건**
+  | raw 파일 | raw 수정일 | 경과일 |
+  |---|---|---|
+  | raw/자료구조/CSE2112_02_week01_2.pdf | 2026-03-05 | 98일 |
+  | raw/자료구조/CSE2112_02_week03_2.pdf | 2026-03-19 | 84일 |
+  | raw/자료구조/CSE2112_02_week04_1.pdf | 2026-03-24 | 79일 |
+  | raw/자료구조/CSE2112_02_week05_2.pdf | 2026-04-02 | 70일 |
+  | raw/자료구조/CSE2112_02_week06_2.pdf | 2026-04-09 | 63일 |
+  | raw/자료구조/CSE2112_02_week02_1.pdf | 2026-04-21 | 51일 |
+  | raw/자료구조/CSE2112_02_week04_2.pdf | 2026-04-21 | 51일 |
+  | raw/자료구조/CSE2112_02_week05_1.pdf | 2026-04-21 | 51일 |
+  | raw/자료구조/CSE2112_02_week06_1.pdf | 2026-04-21 | 51일 |
+  | raw/자료구조/CSE2112_02_week07_1.pdf | 2026-04-21 | 51일 |
+  | raw/자료구조/CSE2112_02_week07_2.pdf | 2026-04-21 | 51일 |
+  | raw/자료구조/CSE2112_02_week03_1.pdf | 2026-04-23 | 49일 |
+  | raw/자료구조/CSE2112_02_week09_2.pdf | 2026-04-30 | 42일 |
+  | raw/자료구조/CSE2112_02_week10_1.pdf | 2026-05-06 | 36일 |
+  | raw/자료구조/CSE2112_02_week10_2.pdf | 2026-05-07 | 35일 |
+  | raw/자료구조/CSE2112_02_week11_2.pdf | 2026-05-14 | 28일 |
+  | raw/자료구조/CSE2112_02_week12_1.pdf | 2026-05-21 | 21일 |
+  | raw/자료구조/CSE2112_02_week12_2.pdf | 2026-05-21 | 21일 |
+  | raw/자료구조/CSE2112_02_week13_1 (1).pdf | 2026-05-26 | 16일 |
+  | raw/자료구조/CSE2112_02_week13_2.pdf | 2026-05-28 | 14일 |
+  | raw/자료구조/(참고자료) Week13_Graphs (1).pdf | 2026-05-28 | 14일 |
+
+  **[컴퓨터네트워크] — 1건**
+  | raw 파일 | raw 수정일 | 경과일 |
+  |---|---|---|
+  | raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf | 2026-03-10 | 93일 |
+
+- **오래된 wiki 페이지:** 이상 없음
+
+- **깨진 링크:** 19건 (미생성 대상 페이지 13종)
+
+  | 참조 위치 | 깨진 링크 |
+  |---|---|
+  | [[adjacency-matrix]] | [[adjacency-list]] |
+  | [[all-pairs-shortest-paths]] | [[dijkstra-algorithm]] |
+  | [[binary-tree-implementation]] | [[linked-list]] |
+  | [[binary-tree-implementation]] | [[array]] |
+  | [[binary-tree-traversal]] | [[tree]] |
+  | [[binary-tree]] | [[tree]] |
+  | [[relational-algebra]] | [[tuple-relational-calculus]] |
+  | [[relational-algebra]] | [[domain-relational-calculus]] |
+  | [[relational-model]] | [[normalization-theory]] |
+  | [[stack]] | [[linked-list]] |
+  | [[tcp-header]] | [[udp]] |
+  | [[tcp-three-way-handshake]] | [[tcp-options]] |
+  | [[transport-layer-demultiplexing]] | [[udp]] |
+  | [[tcp]] | [[udp]] |
+  | [[floyd-warshall-algorithm]] | [[dijkstra-algorithm]] |
+  | [[use-case-formats]] | [[functional-requirements]] |
+  | [[use-case-formats]] | [[test-case]] |
+  | [[use-case]] | [[functional-requirements]] |
+  | [[use-case]] | [[data-model]] |
+
+  > **미생성 페이지 목록 (13종):** `adjacency-list`, `dijkstra-algorithm`, `linked-list`, `array`, `tree`, `tuple-relational-calculus`, `domain-relational-calculus`, `normalization-theory`, `udp`, `tcp-options`, `functional-requirements`, `test-case`, `data-model`
+
+- **wiki 페이지 업데이트 필요:** 이상 없음
+
+---
+
+- **종합:** 업데이트 필요 항목 **60건**
+  - re-ingest 대기: 41건 (데이터베이스 9 / 알고리즘 10 / 자료구조 21 / 컴퓨터네트워크 1)
+  - 깨진 링크: 19건 (미생성 페이지 13종으로 인한 참조 오류)
+  - 신규 ingest 대기: 0건
+  - wiki 페이지 직접 갱신 필요: 0건
+
+
+## [2026-06-11 20:48] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 20:51] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 20:53] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 20:54] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 20:58] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 21:00] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 21:01] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 21:03] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+
+## [2026-06-11 21:14] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+## [2026-06-11] back-check | 유지보수 점검
+
+- **점검 대상 wiki 페이지:** 272개
+
+---
+
+### raw/ 신규 파일 (ingest 대기)
+
+없음
+
+---
+
+### re-ingest 필요 (raw 갱신 감지됨) — 총 41건
+
+#### 📂 데이터베이스 (9건)
+
+| 파일명 | raw 수정일 |
+|--------|-----------|
+| ER model.pdf | 2026-04-16 |
+| Indexing.pdf | 2026-05-26 |
+| Intermediate SQL.pdf | 2026-04-09 |
+| Intro to databases.pdf | 2026-03-10 |
+| Query Processing.pdf | 2026-05-28 |
+| Relational DB Design (1).pdf | 2026-04-30 |
+| Relational Model 2.pdf | 2026-03-19 |
+| SQL Basics.pdf | 2026-04-23 |
+| Storage and File Structure (1).pdf | 2026-05-12 |
+
+#### 📂 알고리즘 (10건)
+
+| 파일명 | raw 수정일 |
+|--------|-----------|
+| CH01 알고리즘과 문제의 분석 (2).pdf | 2026-04-16 |
+| CH02 자료의 추상화와 기본 자료 구조.pdf | 2026-04-16 |
+| CH04 정렬.pdf | 2026-04-18 |
+| CH06 동적 집합과 탐색.pdf | 2026-04-16 |
+| CH07 그래프와 그래프 운행 1.pdf | 2026-05-06 |
+| CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf | 2026-05-21 |
+| CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf | 2026-05-14 |
+| CH10 동적 계획법.pdf | 2026-05-27 |
+| CH11 스트링 매칭.pdf | 2026-05-28 |
+| CH13 NP-완전 문제.pdf | 2026-05-28 |
+
+#### 📂 자료구조 (21건)
+
+| 파일명 | raw 수정일 |
+|--------|-----------|
+| (참고자료) Week13_Graphs (1).pdf | 2026-05-28 |
+| CSE2112_02_week01_2.pdf | 2026-03-05 |
+| CSE2112_02_week02_1.pdf | 2026-04-21 |
+| CSE2112_02_week03_1.pdf | 2026-04-23 |
+| CSE2112_02_week03_2.pdf | 2026-03-19 |
+| CSE2112_02_week04_1.pdf | 2026-03-24 |
+| CSE2112_02_week04_2.pdf | 2026-04-21 |
+| CSE2112_02_week05_1.pdf | 2026-04-21 |
+| CSE2112_02_week05_2.pdf | 2026-04-02 |
+| CSE2112_02_week06_1.pdf | 2026-04-21 |
+| CSE2112_02_week06_2.pdf | 2026-04-09 |
+| CSE2112_02_week07_1.pdf | 2026-04-21 |
+| CSE2112_02_week07_2.pdf | 2026-04-21 |
+| CSE2112_02_week09_2.pdf | 2026-04-30 |
+| CSE2112_02_week10_1.pdf | 2026-05-06 |
+| CSE2112_02_week10_2.pdf | 2026-05-07 |
+| CSE2112_02_week11_2.pdf | 2026-05-14 |
+| CSE2112_02_week12_1.pdf | 2026-05-21 |
+| CSE2112_02_week12_2.pdf | 2026-05-21 |
+| CSE2112_02_week13_1 (1).pdf | 2026-05-26 |
+| CSE2112_02_week13_2.pdf | 2026-05-28 |
+
+#### 📂 컴퓨터네트워크 (1건)
+
+| 파일명 | raw 수정일 |
+|--------|-----------|
+| Week 01 Overview of Computer Networks (1).pdf | 2026-03-10 |
+
+---
+
+### 깨진 링크 — 총 19건
+
+| 출처 페이지 | 깨진 참조 |
+|------------|----------|
+| [[adjacency-matrix]] | `[[adjacency-list]]` |
+| [[all-pairs-shortest-paths]] | `[[dijkstra-algorithm]]` |
+| [[binary-tree-implementation]] | `[[linked-list]]` |
+| [[binary-tree-implementation]] | `[[array]]` |
+| [[binary-tree-traversal]] | `[[tree]]` |
+| [[binary-tree]] | `[[tree]]` |
+| [[relational-algebra]] | `[[tuple-relational-calculus]]` |
+| [[relational-algebra]] | `[[domain-relational-calculus]]` |
+| [[relational-model]] | `[[normalization-theory]]` |
+| [[stack]] | `[[linked-list]]` |
+| [[tcp-header]] | `[[udp]]` |
+| [[tcp-three-way-handshake]] | `[[tcp-options]]` |
+| [[transport-layer-demultiplexing]] | `[[udp]]` |
+| [[use-case-formats]] | `[[functional-requirements]]` |
+| [[use-case-formats]] | `[[test-case]]` |
+| [[use-case]] | `[[functional-requirements]]` |
+| [[use-case]] | `[[data-model]]` |
+| [[floyd-warshall-algorithm]] | `[[dijkstra-algorithm]]` |
+| [[tcp]] | `[[udp]]` |
+
+> ⚠️ **반복 참조 오류 패턴 주목:**
+> - `[[udp]]` — 3개 페이지에서 동시 참조 오류 (tcp-header, transport-layer-demultiplexing, tcp)
+> - `[[dijkstra-algorithm]]` — 2개 페이지에서 동시 참조 오류 (all-pairs-shortest-paths, floyd-warshall-algorithm)
+> - `[[linked-list]]` — 2개 페이지에서 동시 참조 오류 (binary-tree-implementation, stack)
+> - `[[functional-requirements]]` — 2개 페이지에서 동시 참조 오류 (use-case-formats, use-case)
+> - `[[tree]]` — 2개 페이지에서 동시 참조 오류 (binary-tree-traversal, binary-tree)
+
+---
+
+### wiki 페이지 업데이트 필요
+
+이상 없음
+
+---
+
+### 종합
+
+| 항목 | 결과 |
+|------|------|
+| raw/ 신규 파일 | 이상 없음 |
+| re-ingest 필요 파일 | ⚠️ **41건** (데이터베이스 9 / 알고리즘 10 / 자료구조 21 / 컴퓨터네트워크 1) |
+| 깨진 링크 | ⚠️ **19건** (대상 슬러그 미생성 또는 슬러그명 불일치 의심) |
+| wiki 페이지 업데이트 | 이상 없음 |
+| **총 업데이트 필요 항목** | **60건** |
+
+
+## [2026-06-11 21:20] stop-hook | wiki 상태 체크
+
+- **총 페이지:** 272개 (concept 219 / entity 42 / synthesis 11)
+- **미처리 PDF:** 0개
+- **re-ingest 필요:** 41개
+- **깨진 링크:** 19개
+  - adjacency-matrix.md에서 [[adjacency-list]] 참조 오류
+  - all-pairs-shortest-paths.md에서 [[dijkstra-algorithm]] 참조 오류
+  - binary-tree-implementation.md에서 [[linked-list]] 참조 오류
+  - binary-tree-implementation.md에서 [[array]] 참조 오류
+  - binary-tree-traversal.md에서 [[tree]] 참조 오류
+  - binary-tree.md에서 [[tree]] 참조 오류
+  - relational-algebra.md에서 [[tuple-relational-calculus]] 참조 오류
+  - relational-algebra.md에서 [[domain-relational-calculus]] 참조 오류
+  - relational-model.md에서 [[normalization-theory]] 참조 오류
+  - stack.md에서 [[linked-list]] 참조 오류
+  - tcp-header.md에서 [[udp]] 참조 오류
+  - tcp-three-way-handshake.md에서 [[tcp-options]] 참조 오류
+  - transport-layer-demultiplexing.md에서 [[udp]] 참조 오류
+  - use-case-formats.md에서 [[functional-requirements]] 참조 오류
+  - use-case-formats.md에서 [[test-case]] 참조 오류
+  - use-case.md에서 [[functional-requirements]] 참조 오류
+  - use-case.md에서 [[data-model]] 참조 오류
+  - floyd-warshall-algorithm.md에서 [[dijkstra-algorithm]] 참조 오류
+  - tcp.md에서 [[udp]] 참조 오류
+- **종합:** re-ingest 필요 41개, 깨진 링크 19개
+
+
+## [2026-06-11] back-check | 유지보수 점검
+
+> **Wiki 총 페이지 수:** 272개
+
+---
+
+### raw/ 신규 파일 (ingest 대기)
+
+- **raw/ 신규 파일:** 없음
+
+---
+
+### 오래된 Wiki 페이지 (re-ingest 필요)
+
+raw 파일이 수정되었으나 wiki 페이지에 반영되지 않은 항목 — **총 41건**
+
+#### 📁 데이터베이스 (9건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/데이터베이스/Intro to databases.pdf` | 2026-03-10 | **93일** |
+| `raw/데이터베이스/Intermediate SQL.pdf` | 2026-04-09 | **63일** |
+| `raw/데이터베이스/ER model.pdf` | 2026-04-16 | **56일** |
+| `raw/데이터베이스/SQL Basics.pdf` | 2026-04-23 | **49일** |
+| `raw/데이터베이스/Relational DB Design (1).pdf` | 2026-04-30 | **42일** |
+| `raw/데이터베이스/Storage and File Structure (1).pdf` | 2026-05-12 | **30일** |
+| `raw/데이터베이스/Indexing.pdf` | 2026-05-26 | **16일** |
+| `raw/데이터베이스/Query Processing.pdf` | 2026-05-28 | **14일** |
+| `raw/데이터베이스/Relational Model 2.pdf` | 2026-03-19 | **84일** |
+
+#### 📁 알고리즘 (10건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/알고리즘/CH01 알고리즘과 문제의 분석 (2).pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH02 자료의 추상화와 기본 자료 구조.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH04 정렬.pdf` | 2026-04-18 | **54일** |
+| `raw/알고리즘/CH06 동적 집합과 탐색.pdf` | 2026-04-16 | **56일** |
+| `raw/알고리즘/CH07 그래프와 그래프 운행 1.pdf` | 2026-05-06 | **36일** |
+| `raw/알고리즘/CH09 이행 폐쇄와 모든 쌍 최단 경로.pdf` | 2026-05-14 | **28일** |
+| `raw/알고리즘/CH08 그래프 최적화 문제와 욕심쟁이 방법.pdf` | 2026-05-21 | **21일** |
+| `raw/알고리즘/CH10 동적 계획법.pdf` | 2026-05-27 | **15일** |
+| `raw/알고리즘/CH11 스트링 매칭.pdf` | 2026-05-28 | **14일** |
+| `raw/알고리즘/CH13 NP-완전 문제.pdf` | 2026-05-28 | **14일** |
+
+#### 📁 자료구조 (21건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/자료구조/CSE2112_02_week01_2.pdf` | 2026-03-05 | **98일** |
+| `raw/자료구조/CSE2112_02_week03_2.pdf` | 2026-03-19 | **84일** |
+| `raw/자료구조/CSE2112_02_week04_1.pdf` | 2026-03-24 | **79일** |
+| `raw/자료구조/CSE2112_02_week05_2.pdf` | 2026-04-02 | **70일** |
+| `raw/자료구조/CSE2112_02_week06_2.pdf` | 2026-04-09 | **63일** |
+| `raw/자료구조/CSE2112_02_week02_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week04_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week05_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week06_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_1.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week07_2.pdf` | 2026-04-21 | **51일** |
+| `raw/자료구조/CSE2112_02_week03_1.pdf` | 2026-04-23 | **49일** |
+| `raw/자료구조/CSE2112_02_week09_2.pdf` | 2026-04-30 | **42일** |
+| `raw/자료구조/CSE2112_02_week10_1.pdf` | 2026-05-06 | **36일** |
+| `raw/자료구조/CSE2112_02_week10_2.pdf` | 2026-05-07 | **35일** |
+| `raw/자료구조/CSE2112_02_week11_2.pdf` | 2026-05-14 | **28일** |
+| `raw/자료구조/CSE2112_02_week12_1.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week12_2.pdf` | 2026-05-21 | **21일** |
+| `raw/자료구조/CSE2112_02_week13_1 (1).pdf` | 2026-05-26 | **16일** |
+| `raw/자료구조/CSE2112_02_week13_2.pdf` | 2026-05-28 | **14일** |
+| `raw/자료구조/(참고자료) Week13_Graphs (1).pdf` | 2026-05-28 | **14일** |
+
+#### 📁 컴퓨터네트워크 (1건)
+
+| raw 파일 | raw 수정일 | 지연 |
+|---|---|---|
+| `raw/컴퓨터네트워크/Week 01 Overview of Computer Networks (1).pdf` | 2026-03-10 | **93일** |
+
+---
+
+### 깨진 링크
+
+wiki 페이지 내 존재하지 않는 슬러그를 참조하는 항목 — **총 19건**
+
+| 출처 페이지 | 깨진 참조 |
+|---|---|
+| `adjacency-matrix.md` | [[adjacency-list]] |
+| `all-pairs-shortest-paths.md` | [[dijkstra-algorithm]] |
+| `binary-tree-implementation.md` | [[linked-list]] |
+| `binary-tree-implementation.md` | [[array]] |
+| `binary-tree-traversal.md` | [[tree]] |
+| `binary-tree.md` | [[tree]] |
+| `floyd-warshall-algorithm.md` | [[dijkstra-algorithm]] |
+| `relational-algebra.md` | [[tuple-relational-calculus]] |
+| `relational-algebra.md` | [[domain-relational-calculus]] |
+| `relational-model.md` | [[normalization-theory]] |
+| `stack.md` | [[linked-list]] |
+| `tcp-header.md` | [[udp]] |
+| `tcp-three-way-handshake.md` | [[tcp-options]] |
+| `tcp.md` | [[udp]] |
+| `transport-layer-demultiplexing.md` | [[udp]] |
+| `use-case-formats.md` | [[functional-requirements]] |
+| `use-case-formats.md` | [[test-case]] |
+| `use-case.md` | [[functional-requirements]] |
+| `use-case.md` | [[data-model]] |
+
+> ⚠️ **반복 참조 오류 패턴 감지:**
+> - `[[udp]]` — 3개 페이지에서 공통 참조 오류 (`tcp-header`, `tcp`, `transport-layer-demultiplexing`)
+> - `[[linked-list]]` — 2개 페이지에서 공통 참조 오류 (`binary-tree-implementation`, `stack`)
+> - `[[tree]]` — 2개 페이지에서 공통 참조 오류 (`binary-tree`, `binary-tree-traversal`)
+> - `[[dijkstra-algorithm]]` — 2개 페이지에서 공통 참조 오류 (`all-pairs-shortest-paths`, `floyd-warshall-algorithm`)
+> - `[[functional-requirements]]` — 2개 페이지에서 공통 참조 오류 (`use-case-formats`, `use-case`)
+
+---
+
+### Wiki 페이지 업데이트 필요
+
+- **wiki 페이지 업데이트 필요:** 이상 없음
+
+---
+
+### 종합
+
+| 항목 | 건수 |
+|---|---|
+| raw/ 신규 파일 (ingest 대기) | 0건 |
+| re-ingest 필요 (raw 갱신 미반영) | **41건** |
+| 깨진 링크 | **19건** |
+| wiki 페이지 업데이트 | 0건 |
+| **총 업데이트 필요 항목** | **60건** |
+
+- **종합:** ⚠️ 업데이트 필요 항목 **60건** 확인됨
+  - 가장 오래된 미반영 파일: `raw/자료구조/CSE2112_02_week01_2.pdf` (98일 지연)
+  - 우선 처리 권장: 지연 30일 초과 파일 26건, `[[udp]]` 등 반복 깨진 링크 슬러그 신규 생성 검토
