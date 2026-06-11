@@ -469,46 +469,14 @@ body {
   </button>
 </div>
 
-<!-- Drive 탐색 모달 -->
-<div class="modal-overlay" id="drive-modal">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title">☁️ Drive 폴더 가져오기</div>
-      <button class="modal-close" onclick="closeDriveModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="drive-tabs">
-        <button class="drive-tab active" id="tab-onedrive" onclick="setDriveProvider('onedrive',this)">OneDrive</button>
-        <button class="drive-tab" id="tab-gdrive" onclick="setDriveProvider('gdrive',this)">Google Drive</button>
-      </div>
-      <div class="breadcrumb" id="drive-breadcrumb"></div>
-      <div class="folder-list" id="drive-folder-list">
-        <div class="drive-loading">로딩 중...</div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <input class="subject-input" id="drive-subject" placeholder="과목명 (raw/ 하위 폴더명)">
-      <button class="pull-btn" id="drive-pull-btn" onclick="pullSelected()" disabled>가져오기</button>
-      <span class="pull-msg" id="drive-pull-msg"></span>
-    </div>
-  </div>
-</div>
 
 <div class="main">
 
   <!-- Left Panel -->
   <div class="left">
-    <div class="left-header" style="display:flex;align-items:flex-start;justify-content:space-between">
-      <div>
-        <div class="left-title">LLM Wiki</div>
-        <div class="left-sub" id="subject-count">강의자료 모음</div>
-      </div>
-      <button style="background:none;border:1px solid #2a2b3d;border-radius:5px;color:#7c88b0;font-size:10px;padding:3px 7px;cursor:pointer;margin-top:2px;transition:all .12s"
-        onmouseover="this.style.color='#a9b1d6';this.style.borderColor='#4a5078'"
-        onmouseout="this.style.color='#7c88b0';this.style.borderColor='#2a2b3d'"
-        onclick="openDriveModal()" title="Drive 폴더를 탐색해 강의자료 가져오기">
-        ☁️ Drive
-      </button>
+    <div class="left-header">
+      <div class="left-title">LLM Wiki</div>
+      <div class="left-sub" id="subject-count">로딩 중...</div>
     </div>
     <input class="search" id="search" type="text" placeholder="검색 (제목/태그)...">
     <div class="nav" id="nav"></div>
@@ -518,7 +486,7 @@ body {
   <div class="center" id="center">
     <div class="empty">
       <div class="empty-ico">📚</div>
-      <div class="empty-txt">좌측에서 강의자료를 선택하세요</div>
+      <div class="empty-txt">좌측에서 항목을 선택하세요</div>
     </div>
   </div>
 
@@ -560,7 +528,7 @@ body {
           <button class="quiz-gen-btn" onclick="generateQuiz()">문제 생성</button>
         </div>
         <div class="quiz-output" id="quiz-output">
-          <p style="color:#8892b0;font-size:12px">좌측에서 강의자료를 선택한 뒤 문제를 생성하세요.</p>
+          <p style="color:#8892b0;font-size:12px">좌측에서 항목을 선택한 뒤 문제를 생성하세요.</p>
         </div>
       </div>
       <div class="quiz-grade-area">
@@ -577,71 +545,87 @@ body {
 // ─────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────
-let activeFile    = null;  // { source, subject }
-let SUBJECTS_DATA = [];    // loaded from API
-let currentNotes  = '';    // Edit Agent 출력 (Quiz Agent에 전달)
-let currentQuestions = ''; // Quiz Agent 출력 (채점에 전달)
+let activeSlug    = null;
+let WIKI_PAGES_DATA = [];
+let currentNotes  = '';
+let currentQuestions = '';
 
 const DOT_COLORS = [
   'dot-teal','dot-blue','dot-orange','dot-purple','dot-green','dot-red'
 ];
 
 // ─────────────────────────────────────────────
-// NAV — API 기반
+// NAV — wiki 페이지 (과목 → 교육자료 → 항목)
 // ─────────────────────────────────────────────
-async function loadSubjects() {
+async function loadWikiNav() {
   try {
-    const r = await fetch(`${API_BASE}/subjects`);
+    const r = await fetch(`${API_BASE}/wiki/pages`);
     const data = await r.json();
-    SUBJECTS_DATA = data.subjects || [];
+    WIKI_PAGES_DATA = data.pages || [];
   } catch {
-    SUBJECTS_DATA = [];
+    WIKI_PAGES_DATA = [];
   }
-  renderNav();
-  const total = SUBJECTS_DATA.reduce((s, sub) => s + sub.files.length, 0);
-  const el = document.getElementById('subject-count');
-  if (el) el.textContent = `${SUBJECTS_DATA.length}과목 · ${total}개 파일`;
+  renderWikiNav();
 }
 
-function renderNav(filter = '') {
+function _groupPages(filter = '') {
+  const lf = filter.toLowerCase();
+  // grouped[subject] = [page, ...]
+  const grouped = {};
+  WIKI_PAGES_DATA.forEach(p => {
+    if (lf && !(p.title||'').toLowerCase().includes(lf)
+            && !(p.tags||[]).some(t => t.toLowerCase().includes(lf))) return;
+    const src = (p.sources && p.sources[0]) || '';
+    const subject = src.replace(/^raw\//, '').split('/')[0] || '기타';
+    if (!grouped[subject]) grouped[subject] = [];
+    grouped[subject].push(p);
+  });
+  // 과목 내 페이지 제목 순 정렬
+  Object.values(grouped).forEach(pages =>
+    pages.sort((a, b) => (a.title||a.slug).localeCompare(b.title||b.slug, 'ko'))
+  );
+  return grouped;
+}
+
+function renderWikiNav(filter = '') {
   const nav = document.getElementById('nav');
   nav.innerHTML = '';
-  const lf = filter.toLowerCase();
+  const grouped = _groupPages(filter);
+  // 과목 이름 정렬 ('기타'는 마지막)
+  const subjects = Object.keys(grouped).sort((a, b) =>
+    a === '기타' ? 1 : b === '기타' ? -1 : a.localeCompare(b, 'ko')
+  );
 
-  if (!SUBJECTS_DATA.length) {
-    nav.innerHTML = '<div style="padding:16px 14px;font-size:12px;color:#8892b0">강의자료를 불러오는 중...</div>';
+  const el = document.getElementById('subject-count');
+
+  if (!subjects.length) {
+    nav.innerHTML = '<div style="padding:16px 14px;font-size:12px;color:#8892b0">'
+      + (WIKI_PAGES_DATA.length ? '검색 결과 없음' : '항목 없음 — AgentMEMO에서 Ingest 실행') + '</div>';
+    if (el) el.textContent = `0과목 · ${WIKI_PAGES_DATA.length}개 항목`;
     return;
   }
 
-  SUBJECTS_DATA.forEach((subj, si) => {
-    let files = subj.files;
-    if (lf) {
-      files = files.filter(f => f.toLowerCase().includes(lf));
-      if (!files.length) return;
-    }
-
+  subjects.forEach((subj, si) => {
     const dot = DOT_COLORS[si % DOT_COLORS.length];
+    const pages = grouped[subj];
     const folder = document.createElement('div');
-    folder.className = 'folder' + (lf ? ' open' : '');
+    folder.className = 'folder' + (filter ? ' open' : '');
 
     const head = document.createElement('div');
     head.className = 'folder-head';
-    head.innerHTML = `<span class="folder-ico">📁</span><span class="folder-label">${subj.name}</span><span class="folder-arrow">▶</span>`;
+    head.innerHTML = `<span class="folder-ico">📁</span><span class="folder-label">${escHtml(subj)}</span>`
+      + `<span class="folder-arrow">▶</span>`;
     head.addEventListener('click', () => folder.classList.toggle('open'));
 
     const body = document.createElement('div');
     body.className = 'folder-body';
 
-    files.forEach(fname => {
-      const key = `${subj.name}::${fname}`;
-      const isActive = activeFile && activeFile.source === fname && activeFile.subject === subj.name;
+    pages.forEach(p => {
       const item = document.createElement('div');
-      item.className = 'doc' + (isActive ? ' active' : '');
-      item.dataset.key = key;
-      // 파일명에서 확장자 제거해서 표시
-      const label = fname.replace(/\.[^.]+$/, '');
-      item.innerHTML = `<div class="dot ${dot}"></div><span title="${fname}">${label}</span>`;
-      item.addEventListener('click', () => selectFile(fname, subj.name, dot));
+      item.className = 'doc' + (p.slug === activeSlug ? ' active' : '');
+      item.dataset.slug = p.slug;
+      item.innerHTML = `<div class="dot ${dot}"></div><span title="${escHtml(p.title||p.slug)}">${escHtml(p.title||p.slug)}</span>`;
+      item.addEventListener('click', () => selectWikiPage(p.slug));
       body.appendChild(item);
     });
 
@@ -649,71 +633,55 @@ function renderNav(filter = '') {
     folder.appendChild(body);
     nav.appendChild(folder);
   });
+
+  const total = WIKI_PAGES_DATA.length;
+  if (el) el.textContent = `${subjects.length}과목 · ${total}개 항목`;
 }
 
 // ─────────────────────────────────────────────
-// SELECT FILE — Edit Agent 스트리밍
+// SELECT PAGE — wiki 페이지 즉시 표시
 // ─────────────────────────────────────────────
-async function selectFile(source, subject, dot) {
-  activeFile = { source, subject };
+async function selectWikiPage(slug) {
+  activeSlug = slug;
   currentNotes = '';
   currentQuestions = '';
 
   document.querySelectorAll('.doc').forEach(el =>
-    el.classList.toggle('active', el.dataset.key === `${subject}::${source}`)
+    el.classList.toggle('active', el.dataset.slug === slug)
   );
 
   const center = document.getElementById('center');
-  const label = source.replace(/\.[^.]+$/, '');
-  const dotBg = {
-    'dot-teal':'#dbeafe|#1d4ed8','dot-blue':'#ede9fe|#6d28d9',
-    'dot-orange':'#fef3c7|#b45309','dot-purple':'#f3e8ff|#7c3aed',
-    'dot-green':'#dcfce7|#15803d','dot-red':'#fee2e2|#b91c1c'
-  };
-  const [bg, fg] = (dotBg[dot] || '#dbeafe|#1d4ed8').split('|');
-
   center.innerHTML = `
     <div class="content-scroll">
-      <div class="tags">
-        <span class="tag" style="background:${bg};color:${fg}">${subject}</span>
-        <span class="tag tag-kw">📄 ${escHtml(source)}</span>
-        <span class="tag tag-date" id="edit-status">Edit Agent 정리 중...</span>
-      </div>
       <div class="center-loading" id="center-loading">
-        <div class="spin"></div>내용을 분석하고 있습니다...
+        <div class="spin"></div>불러오는 중...
       </div>
       <div class="md" id="md-body"></div>
     </div>`;
 
   try {
-    const resp = await fetch(`${API_BASE}/agents/edit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ source, subject }),
-    });
+    const r = await fetch(`${API_BASE}/wiki/pages/${encodeURIComponent(slug)}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    currentNotes = data.content;
 
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const tagsHtml = (data.tags||[]).map(t =>
+      `<span class="tag tag-kw">${escHtml(t)}</span>`).join('');
+    const catHtml = data.category
+      ? `<span class="tag">${escHtml(data.category)}</span>` : '';
+    const srcHtml = (data.sources||[]).map(s => {
+      const fname = s.split('/').pop();
+      return `<span class="tag tag-date">📄 ${escHtml(fname)}</span>`;
+    }).join('');
 
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      currentNotes += decoder.decode(value, { stream: true });
-
-      const loading = document.getElementById('center-loading');
-      if (loading) loading.remove();
-
-      const mdBody = document.getElementById('md-body');
-      if (mdBody) mdBody.innerHTML = marked.parse(`# ${label}\n\n` + currentNotes);
-    }
-
-    const statusEl = document.getElementById('edit-status');
-    if (statusEl) statusEl.textContent = '✓ 정리 완료';
-
+    document.getElementById('center-loading')?.remove();
+    const mdBody = document.getElementById('md-body');
+    if (mdBody) mdBody.innerHTML =
+      `<div class="tags">${catHtml}${tagsHtml}${srcHtml}</div>` +
+      `<h1 style="margin:12px 0 16px;font-size:1.4em;color:#c0caf5">${escHtml(data.title||slug)}</h1>` +
+      marked.parse(data.content);
   } catch (e) {
+    document.getElementById('center-loading')?.remove();
     const mdBody = document.getElementById('md-body');
     if (mdBody) mdBody.innerHTML = `<p style="color:#f7768e">오류: ${escHtml(String(e))}</p>`;
   }
@@ -813,7 +781,9 @@ async function sendWikiAgent(question) {
       body: JSON.stringify({
         question,
         notes: currentNotes || '',
-        subject: activeFile ? activeFile.subject : null,
+        subject: activeSlug
+          ? (WIKI_PAGES_DATA.find(p => p.slug === activeSlug)?.sources?.[0]?.split('/')?.[1] || null)
+          : null,
       }),
     });
 
@@ -914,7 +884,7 @@ function preProcessQuiz(text) {
 
 async function generateQuiz() {
   if (!currentNotes.trim()) {
-    alert('먼저 좌측에서 강의자료 파일을 선택하세요.');
+    alert('먼저 좌측에서 항목을 선택하세요.');
     return;
   }
   const count = parseInt(document.getElementById('quiz-count').value) || 5;
@@ -979,139 +949,11 @@ async function gradeQuiz() {
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
-// ─────────────────────────────────────────────
-// DRIVE 모달
-// ─────────────────────────────────────────────
-let driveProvider = 'onedrive';
-let drivePath = '/';
-let driveSelected = null;
-
-function openDriveModal() {
-  drivePath = '/';
-  driveSelected = null;
-  document.getElementById('drive-subject').value = '';
-  document.getElementById('drive-pull-btn').disabled = true;
-  document.getElementById('drive-pull-msg').textContent = '';
-  document.getElementById('drive-modal').classList.add('open');
-  browseDrive('/');
-}
-
-function closeDriveModal() {
-  document.getElementById('drive-modal').classList.remove('open');
-}
-
-function setDriveProvider(provider, el) {
-  driveProvider = provider;
-  document.querySelectorAll('.drive-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  drivePath = '/';
-  driveSelected = null;
-  browseDrive('/');
-}
-
-async function browseDrive(path) {
-  drivePath = path;
-  driveSelected = null;
-  document.getElementById('drive-pull-btn').disabled = true;
-
-  const list = document.getElementById('drive-folder-list');
-  list.innerHTML = '<div class="drive-loading">로딩 중...</div>';
-
-  // 브레드크럼 렌더링
-  const crumb = document.getElementById('drive-breadcrumb');
-  const parts = path === '/' ? [''] : path.split('/').filter(Boolean);
-  let crumbHtml = `<span class="breadcrumb-item" onclick="browseDrive('/')">루트</span>`;
-  let cumPath = '';
-  for (const p of parts) {
-    cumPath += '/' + p;
-    const cp = cumPath;
-    crumbHtml += `<span class="breadcrumb-sep">›</span><span class="breadcrumb-item" onclick="browseDrive('${cp}')">${p}</span>`;
-  }
-  crumb.innerHTML = crumbHtml;
-
-  try {
-    const res = await fetch(`${API_BASE}/sync/browse?provider=${driveProvider}&path=${encodeURIComponent(path)}`);
-    if (!res.ok) {
-      const err = await res.json();
-      list.innerHTML = `<div class="drive-error">❌ ${escHtml(err.detail || '오류')}</div>`;
-      return;
-    }
-    const data = await res.json();
-    if (!data.folders.length) {
-      list.innerHTML = '<div class="drive-loading">폴더 없음</div>';
-      return;
-    }
-    list.innerHTML = data.folders.map(f => `
-      <div class="folder-item" data-path="${escHtml(f.path)}" data-name="${escHtml(f.name)}"
-           onclick="selectFolder('${escHtml(f.path)}', '${escHtml(f.name)}', event)"
-           ondblclick="browseDrive('${escHtml(f.path)}')">
-        <span class="folder-item-ico">📁</span>
-        <span>${escHtml(f.name)}</span>
-        <span class="folder-item-enter" title="하위 폴더 열기">→</span>
-      </div>`).join('');
-  } catch (e) {
-    list.innerHTML = `<div class="drive-error">❌ ${escHtml(String(e))}</div>`;
-  }
-}
-
-function selectFolder(path, name, e) {
-  // → 아이콘 클릭이면 하위 탐색
-  if (e.target.classList.contains('folder-item-enter')) {
-    browseDrive(path);
-    return;
-  }
-  driveSelected = path;
-  document.querySelectorAll('.folder-item').forEach(el => el.classList.remove('selected'));
-  e.currentTarget.classList.add('selected');
-
-  // 과목명 자동 채우기
-  const subjectInput = document.getElementById('drive-subject');
-  if (!subjectInput.value) subjectInput.value = name;
-  document.getElementById('drive-pull-btn').disabled = false;
-}
-
-async function pullSelected() {
-  const subject = document.getElementById('drive-subject').value.trim();
-  if (!driveSelected || !subject) return;
-
-  const btn = document.getElementById('drive-pull-btn');
-  const msg = document.getElementById('drive-pull-msg');
-  btn.disabled = true;
-  msg.textContent = '';
-  msg.style.color = '#9ece6a';
-
-  try {
-    const res = await fetch(`${API_BASE}/sync/pull`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider: driveProvider, drive_folder: driveSelected, subject }),
-    });
-    const data = await res.json();
-    msg.textContent = res.ok ? `✓ ${data.message}` : `❌ ${data.detail}`;
-    if (!res.ok) msg.style.color = '#f7768e';
-    if (res.ok) {
-      setTimeout(() => {
-        closeDriveModal();
-        loadSubjects(); // 네비게이션 새로고침
-      }, 1500);
-    }
-  } catch (e) {
-    msg.textContent = `❌ ${e}`;
-    msg.style.color = '#f7768e';
-  }
-  btn.disabled = false;
-}
-
-// ESC 키로 모달 닫기
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeDriveModal();
-});
-
 document.addEventListener('DOMContentLoaded', () => {
-  checkApi().then(() => loadSubjects());
+  checkApi().then(() => loadWikiNav());
   setInterval(checkApi, 10000);
 
-  document.getElementById('search').addEventListener('input', e => renderNav(e.target.value));
+  document.getElementById('search').addEventListener('input', e => renderWikiNav(e.target.value));
 
   const inp = document.getElementById('chat-in');
   inp.addEventListener('keydown', e => {

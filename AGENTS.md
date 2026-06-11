@@ -17,9 +17,8 @@
 |------|----------|-----------|
 | `agents/edit_agent.py` | Edit Agent | 웹 UI 파일 선택 시 자동 / `python edit_agent.py --ingest` |
 | `agents/quiz_agent.py` | Quiz Agent | 웹 UI 퀴즈 탭에서 호출 |
-| `agents/wiki_agent.py` | Wiki Agent | CLI 독립 실행 (`python wiki_agent.py "질문"`) |
 | `agents/back_agent.py` | Back Agent | 서버 시작 시 자동 실행 |
-| `backend/app/routers/agents.py` | Wiki Agent (웹) | 웹 UI 위키 에이전트 탭에서 호출 |
+| `backend/app/routers/agents.py` | Wiki Agent | 웹 UI 위키 에이전트 탭에서 호출 |
 
 ### 공통 의존성
 
@@ -35,8 +34,8 @@
 | 에이전트 | 역할 | 역할 경계 |
 |----------|------|-----------|
 | Edit Agent | 교육자료 정리 / wiki 자동 ingest | 정리·변환만, 교육자료 외 내용 추가 금지 |
-| Quiz Agent | 시험 문제 출제 및 채점 | 퀴즈·채점만, 개념 설명 거절 |
 | Wiki Agent | 질문 답변 | Q&A만, 문제 출제 거절 |
+| Quiz Agent | 시험 문제 출제 및 채점 | 퀴즈·채점만, 개념 설명 거절 |
 | Back Agent | wiki 유지보수 점검 | 보고만, 직접 수정 금지 |
 
 ---
@@ -89,7 +88,7 @@
 
 ---
 
-## Wiki Agent (웹 UI)
+## Wiki Agent
 
 **파일:** `backend/app/routers/agents.py` — `_WIKI_SYSTEM_PROMPT`
 
@@ -123,57 +122,6 @@
 | 1순위 | 현재 열람 중인 강의 노트 (`currentNotes`) | 파일이 선택되어 있을 때 |
 | 2순위 | `wiki/pages/` 키워드 검색 결과 (최대 5페이지) | 항상 추가 |
 | 3순위 | WebSearch (`--allowed-tools WebSearch`) | 1·2순위 컨텍스트 없을 때 |
-
----
-
-## Wiki Agent (CLI 독립 실행)
-
-**파일:** `agents/wiki_agent.py`
-
-### 시스템 프롬프트 — wiki 기반 답변
-
-```
-너는 LLM Wiki 질문 답변 에이전트야.
-
-답변 우선순위:
-1순위: 제공된 wiki 페이지 내용을 기반으로 답변 (출처: 파일명 명시)
-2순위: wiki에 없으면 웹에서 조사해서 답변 (출처: URL 명시)
-3순위: 웹에서도 못 찾으면 "찾을 수 없습니다" 답변
-
-규칙:
-- 항상 어떤 출처를 사용했는지 명시
-- 여러 과목에 걸친 질문도 통합해서 답변 가능
-- wiki 내용과 웹 내용이 충돌하면 wiki 내용 우선
-- 답변은 한국어로, 핵심 용어는 영어 유지
-- 추측이나 훈련 데이터 기반 답변 금지 — 반드시 제공된 자료만 사용
-
-답변 형식:
-### 답변
-[한국어 답변 내용]
-
-**출처:**
-- (wiki) pages/.../파일명.md
-```
-
-### 시스템 프롬프트 — 웹 검색 fallback
-
-```
-너는 LLM Wiki 질문 답변 에이전트야.
-wiki에서 관련 내용을 찾지 못해 웹 검색으로 답변한다.
-
-규칙:
-- 웹에서 조사한 내용을 기반으로 답변
-- 출처 URL을 반드시 명시
-- 답변은 한국어로, 핵심 용어는 영어 유지
-- 찾을 수 없으면 "찾을 수 없습니다" 답변
-
-답변 형식:
-### 답변
-[한국어 답변 내용]
-
-**출처:**
-- (web) https://...
-```
 
 ---
 

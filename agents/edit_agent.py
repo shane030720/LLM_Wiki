@@ -6,6 +6,9 @@
   python edit_agent.py --ingest     # raw/ 미처리 PDF 자동 wiki 페이지 생성
   python edit_agent.py              # --ingest 와 동일
 
+wiki 페이지 접근은 tools/wiki_client.py (MCP 인터페이스)를 경유한다.
+파일시스템 직접 접근 없음 (raw/ PDF 읽기 및 운영 파일 제외).
+
 auto-ingest 모드는 Claude 세션 한도에 도달하면 reset 시간까지 자동 대기 후 재개한다.
 """
 
@@ -13,20 +16,23 @@ import subprocess
 import sys
 import re
 import shutil
-import time
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 
 PROJECT_DIR = Path(__file__).parent.parent
 WIKI_DIR = PROJECT_DIR / "wiki"
 RAW_DIR = PROJECT_DIR / "raw"
-PAGES_DIR = WIKI_DIR / "pages"
-INDEX_FILE = WIKI_DIR / "index.md"
 LOG_FILE = WIKI_DIR / "log.md"
 STATUS_FILE = WIKI_DIR / "ingest_status.json"
 
 sys.path.insert(0, str(PROJECT_DIR))
 from llm_provider import run as llm_run, stream as llm_stream
+from tools.wiki_client import (
+    get_existing_slugs,
+    get_processed_sources,
+    create_page,
+    rebuild_index,
+)
 
 
 # ── 기존: study notes 모드 ────────────────────────────────────────────
@@ -55,6 +61,7 @@ EDIT_SYSTEM_PROMPT = """너는 교육자료 정리 에이전트야.
 
 
 def read_file(path: Path) -> str:
+    """raw/ 파일 읽기 — PDF 또는 텍스트."""
     if path.suffix.lower() == ".pdf":
         try:
             from pypdf import PdfReader
@@ -85,47 +92,6 @@ def run(file_path: str) -> str:
 
 
 # ── 신규: wiki auto-ingest 모드 ──────────────────────────────────────
-
-class SessionLimitError(Exception):
-    def __init__(self, wait_seconds: int, reset_str: str):
-        self.wait_seconds = wait_seconds
-        self.reset_str = reset_str
-
-
-def _parse_session_limit(text: str) -> SessionLimitError | None:
-    """출력에서 세션 한도 메시지를 감지하고 대기 시간을 계산한다.
-
-    예: "You've hit your session limit · resets 12:50am (Asia/Seoul)"
-    """
-    m = re.search(r"resets (\d+):(\d+)(am|pm)\s*\(([^)]+)\)", text, re.IGNORECASE)
-    if not m or "session limit" not in text.lower():
-        return None
-
-    hour, minute, ampm, tz_name = int(m.group(1)), int(m.group(2)), m.group(3).lower(), m.group(4)
-
-    if ampm == "pm" and hour != 12:
-        hour += 12
-    elif ampm == "am" and hour == 12:
-        hour = 0
-
-    try:
-        from zoneinfo import ZoneInfo
-        tz = ZoneInfo(tz_name)
-        now = datetime.now(tz)
-        reset = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-        if reset <= now:
-            reset += timedelta(days=1)
-        wait = int((reset - now).total_seconds()) + 90  # 1분 30초 버퍼
-    except Exception:
-        wait = 3600  # fallback: 1시간
-
-    reset_str = f"{m.group(1)}:{m.group(2)}{ampm} ({tz_name})"
-    return SessionLimitError(wait, reset_str)
-
-
-def _get_existing_slugs() -> set[str]:
-    return {p.stem for p in PAGES_DIR.rglob("*.md")} if PAGES_DIR.exists() else set()
-
 
 def _ingest_system_prompt(existing_slugs: set[str] | None = None) -> str:
     today = datetime.now().strftime("%Y-%m-%d")
@@ -227,28 +193,12 @@ def _mark_status(rel: str, result: str, pages: list[str], reason: str = "") -> N
     """ingest_status.json에 파일 처리 결과를 기록한다."""
     status = _load_status()
     status[rel] = {
-        "status": result,          # "done" | "skipped" | "failed"
+        "status": result,
         "date": datetime.now().strftime("%Y-%m-%d"),
         "pages": pages,
         **({"reason": reason} if reason else {}),
     }
     _save_status(status)
-
-
-def get_processed_sources() -> set[str]:
-    """wiki 페이지의 sources 필드에 등록된 raw 파일 경로 집합을 반환한다."""
-    processed: set[str] = set()
-    if not PAGES_DIR.exists():
-        return processed
-    for page in PAGES_DIR.rglob("*.md"):
-        content = page.read_text(encoding="utf-8", errors="replace")
-        m = re.search(r"sources:\s*\[([^\]]*)\]", content, re.DOTALL)
-        if m:
-            for src in m.group(1).split(","):
-                src = src.strip().strip("\"'")
-                if src:
-                    processed.add(src)
-    return processed
 
 
 # ingest에서 제외할 raw/ 하위 폴더 이름 목록
@@ -258,14 +208,12 @@ EXCLUDED_DIRS: set[str] = set()
 def find_unprocessed_pdfs() -> list[Path]:
     """raw/ 하위 PDF 중 미처리 파일 목록을 반환한다.
 
-    다음 중 하나라도 해당하면 처리된 것으로 간주한다:
-    - wiki 페이지의 sources: 필드에 등록됨
-    - ingest_status.json에 done/skipped으로 기록됨
-    - EXCLUDED_DIRS에 속한 폴더
+    wiki 페이지 정보는 MCP 인터페이스(get_processed_sources)를 통해 조회한다.
     """
-    processed = get_processed_sources()
+    processed = get_processed_sources()       # MCP 경유
     status = _load_status()
     skipped_or_done = {k for k, v in status.items() if v.get("status") in ("done", "skipped")}
+    # "failed"는 재처리 대상 (LLM 오류이므로 다음 실행 시 다시 시도)
 
     result = []
     for pdf in sorted(RAW_DIR.rglob("*.pdf")):
@@ -283,10 +231,12 @@ def find_unprocessed_pdfs() -> list[Path]:
     return result
 
 
-def _call_claude(pdf_path: Path) -> str:
+def _call_claude(pdf_path: Path) -> str | None:
     """PDF를 Claude로 분석해 wiki 페이지 출력을 반환한다.
 
-    세션 한도에 도달하면 SessionLimitError를 raise한다.
+    Returns:
+        str  — LLM 출력 (빈 문자열이면 텍스트 없는 PDF)
+        None — LLM 호출 자체가 실패 (재처리 필요)
     """
     content = read_file(pdf_path)
     if not content.strip():
@@ -298,20 +248,26 @@ def _call_claude(pdf_path: Path) -> str:
         f"파일 경로(sources 필드에 이 값을 그대로 사용): {rel}\n\n{content}"
     )
 
-    try:
-        output = llm_run(prompt, system=_ingest_system_prompt(_get_existing_slugs()),)
-        return output
-    except Exception as e:
-        print(f"  오류: {e}", file=sys.stderr)
-        return ""
+    existing = get_existing_slugs()
+    return llm_run(prompt, system=_ingest_system_prompt(existing))
 
 
-def _parse_output(text: str) -> tuple[list[tuple[Path, str]], list[str]]:
-    """Claude 출력에서 (경로, 내용) 페이지 목록과 index 행 목록을 파싱한다."""
-    pages: list[tuple[Path, str]] = []
+def _parse_output(text: str) -> tuple[list[tuple[str, str, str]], list[str]]:
+    """Claude 출력에서 (category, slug, content) 페이지 목록과 index 행 목록을 파싱한다."""
+    pages: list[tuple[str, str, str]] = []
     for m in re.finditer(r"<<<PAGE:(.*?)>>>\s*(.*?)\s*<<<END_PAGE>>>", text, re.DOTALL):
-        path = PROJECT_DIR / m.group(1).strip()
-        pages.append((path, m.group(2).strip()))
+        rel_path = m.group(1).strip()          # e.g. "wiki/pages/concepts/binary-search.md"
+        content = m.group(2).strip()
+        parts = Path(rel_path).parts           # ("wiki", "pages", "concepts", "binary-search.md")
+        if len(parts) >= 4:
+            cat_dir = parts[2]                 # "concepts"
+            slug = Path(parts[3]).stem         # "binary-search"
+            _CAT_DIR_MAP = {"concepts": "concept", "entities": "entity", "syntheses": "synthesis"}
+            category = _CAT_DIR_MAP.get(cat_dir, "concept")
+        else:
+            category = "concept"
+            slug = Path(rel_path).stem
+        pages.append((category, slug, content))
 
     index_rows: list[str] = []
     for m in re.finditer(r"<<<INDEX_ROW>>>\s*(.*?)\s*<<<END_INDEX_ROW>>>", text, re.DOTALL):
@@ -320,105 +276,25 @@ def _parse_output(text: str) -> tuple[list[tuple[Path, str]], list[str]]:
     return pages, index_rows
 
 
-def _write_pages(pages: list[tuple[Path, str]]) -> list[str]:
+def _write_pages(pages: list[tuple[str, str, str]]) -> list[str]:
+    """MCP create_page를 통해 wiki 페이지를 저장한다."""
     slugs = []
-    for path, content in pages:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content + "\n", encoding="utf-8")
-        slugs.append(path.stem)
-        print(f"  ✓ {path.relative_to(PROJECT_DIR)}", file=sys.stderr)
+    for category, slug, content in pages:
+        # frontmatter의 title 추출 (없으면 slug 사용)
+        m = re.search(r"^title:\s*(.+)", content, re.M)
+        title = m.group(1).strip() if m else slug
+
+        result = create_page(title=title, content=content, category=category, slug=slug)
+        if result.startswith("[완료]"):
+            slugs.append(slug)
+            print(f"  ✓ {result.replace('[완료] ', '')}", file=sys.stderr)
+        else:
+            print(f"  ! {result}", file=sys.stderr)
     return slugs
 
 
-def rebuild_index() -> None:
-    """wiki/pages/ 하위 모든 .md 파일을 스캔해 index.md를 전체 재생성한다."""
-    seen: set[str] = set()
-    rows: dict[str, list] = {"concept": [], "entity": [], "synthesis": []}
-
-    for md in sorted(PAGES_DIR.rglob("*.md")):
-        if md.stem == "_about" or md.stem in seen:
-            continue
-        seen.add(md.stem)
-
-        content = md.read_text(encoding="utf-8", errors="replace")
-        title   = re.search(r"^title:\s*(.+)",       content, re.M)
-        cat     = re.search(r"^category:\s*(.+)",    content, re.M)
-        tags    = re.search(r"^tags:\s*\[(.+)\]",    content, re.M)
-        updated = re.search(r"^updated:\s*(.+)",     content, re.M)
-
-        title   = title.group(1).strip()   if title   else md.stem
-        cat     = cat.group(1).strip()     if cat     else md.parent.name
-        tags    = tags.group(1).strip()    if tags    else ""
-        updated = updated.group(1).strip() if updated else datetime.now().strftime("%Y-%m-%d")
-
-        sm = re.search(r"## (?:Definition|Overview|Thesis)\n+(.+)", content)
-        summary = sm.group(1).strip() if sm else ""
-        summary = re.sub(r"\[\[.*?\]\]", "", summary)
-        summary = summary[:70] + ("..." if len(summary) > 70 else "")
-
-        bucket = cat if cat in rows else "concept"
-        rows[bucket].append((title, md.stem, tags, updated, summary))
-
-    for bucket in rows:
-        rows[bucket].sort(key=lambda x: x[0].lower())
-
-    def _fmt(bucket: str) -> str:
-        return "\n".join(
-            f"| [[{slug}]] | {bucket} | {tags} | {updated} | {summary} |"
-            for _, slug, tags, updated, summary in rows[bucket]
-        )
-
-    total = sum(len(v) for v in rows.values())
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    INDEX_FILE.write_text(
-        f"""# Wiki Index
-
-Master catalog of all wiki pages. Updated automatically at every Ingest and Lint operation.
-
-> **LLM instruction:** Keep this table sorted by Category (concept → entity → synthesis), then alphabetically by Page within each category. Never delete rows — use ~~strikethrough~~ for deprecated pages.
-
----
-
-## Content Catalog
-
-| Page | Category | Tags | Updated | Summary |
-|------|----------|------|---------|---------|
-{_fmt("concept")}
-{_fmt("entity")}
-{_fmt("synthesis")}
-
----
-
-## Statistics
-
-- **Total pages:** {total}
-- **Concepts:** {len(rows["concept"])}
-- **Entities:** {len(rows["entity"])}
-- **Syntheses:** {len(rows["synthesis"])}
-- **Open contradictions:** 0
-- **Last updated:** {today}
-""",
-        encoding="utf-8",
-    )
-    print(f"index.md 재생성 완료: {total}개 페이지 (concept {len(rows['concept'])}, entity {len(rows['entity'])}, synthesis {len(rows['synthesis'])})", file=sys.stderr)
-
-
-def _update_index(new_rows: list[str]) -> None:
-    if not new_rows or not INDEX_FILE.exists():
-        return
-    content = INDEX_FILE.read_text(encoding="utf-8")
-    insertion = "\n".join(new_rows)
-    updated = content.replace(
-        "\n\n---\n\n## Statistics",
-        f"\n{insertion}\n\n---\n\n## Statistics",
-    )
-    if updated == content:
-        updated = content.rstrip() + "\n" + insertion + "\n"
-    INDEX_FILE.write_text(updated, encoding="utf-8")
-
-
 def _append_log(sources: list[str], slugs: list[str]) -> None:
+    """wiki/log.md에 ingest 작업 상세 기록을 추가한다 (운영 파일 직접 기록)."""
     today = datetime.now().strftime("%Y-%m-%d")
     names = [Path(s).name for s in sources]
     desc = ", ".join(names[:3]) + ("..." if len(names) > 3 else "")
@@ -438,72 +314,58 @@ def _append_log(sources: list[str], slugs: list[str]) -> None:
 
 
 def auto_ingest() -> None:
-    """미처리 PDF를 모두 처리할 때까지 실행한다.
-
-    Claude 세션 한도에 도달하면 reset 시간까지 자동 대기 후 재개한다.
-    """
+    """미처리 PDF를 모두 처리할 때까지 실행한다."""
     all_sources: list[str] = []
     all_slugs: list[str] = []
 
-    while True:
-        unprocessed = find_unprocessed_pdfs()
-        if not unprocessed:
-            break
+    unprocessed = find_unprocessed_pdfs()
+    if not unprocessed:
+        print("미처리 PDF 없음. 모두 처리되었습니다.", file=sys.stderr)
+        return
 
-        print(f"미처리 PDF {len(unprocessed)}개 발견:", file=sys.stderr)
-        for p in unprocessed:
-            print(f"  - {p.relative_to(PROJECT_DIR)}", file=sys.stderr)
+    print(f"미처리 PDF {len(unprocessed)}개 발견:", file=sys.stderr)
+    for p in unprocessed:
+        print(f"  - {p.relative_to(PROJECT_DIR)}", file=sys.stderr)
+    print(file=sys.stderr)
+
+    for pdf in unprocessed:
+        rel = str(pdf.relative_to(PROJECT_DIR))
+        print(f"처리 중: {rel}", file=sys.stderr)
+
+        try:
+            output = _call_claude(pdf)
+        except Exception as e:
+            print(f"  LLM 오류 (재처리 가능): {e}", file=sys.stderr)
+            _mark_status(rel, "failed", [], reason=str(e))
+            continue
+
+        if output == "":
+            print("  건너뜀 (텍스트 없는 PDF)", file=sys.stderr)
+            _mark_status(rel, "skipped", [], reason="no extractable text")
+            continue
+
+        pages, _ = _parse_output(output)
+        if not pages:
+            print(
+                f"  경고: 페이지 파싱 실패. 원본 출력 앞부분:\n{output[:500]}",
+                file=sys.stderr,
+            )
+            _mark_status(rel, "failed", [], reason="parse error")
+            continue
+
+        slugs = _write_pages(pages)
+        _mark_status(rel, "done", slugs)
+        all_sources.append(rel)
+        all_slugs.extend(slugs)
         print(file=sys.stderr)
-
-        session_limited = False
-
-        for pdf in unprocessed:
-            rel = str(pdf.relative_to(PROJECT_DIR))
-            print(f"처리 중: {rel}", file=sys.stderr)
-
-            try:
-                output = _call_claude(pdf)
-            except SessionLimitError as e:
-                mins = e.wait_seconds // 60
-                print(
-                    f"\n  [세션 한도] resets {e.reset_str} — {mins}분 후 자동 재개합니다.",
-                    file=sys.stderr,
-                )
-                time.sleep(e.wait_seconds)
-                session_limited = True
-                break
-
-            if not output:
-                print("  건너뜀 (출력 없음)", file=sys.stderr)
-                _mark_status(rel, "skipped", [], reason="no extractable text")
-                continue
-
-            pages, index_rows = _parse_output(output)
-            if not pages:
-                print(
-                    f"  경고: 페이지 파싱 실패. 원본 출력 앞부분:\n{output[:500]}",
-                    file=sys.stderr,
-                )
-                _mark_status(rel, "failed", [], reason="parse error")
-                continue
-
-            slugs = _write_pages(pages)
-            _update_index(index_rows)
-            _mark_status(rel, "done", slugs)
-            all_sources.append(rel)
-            all_slugs.extend(slugs)
-            print(file=sys.stderr)
-
-        if not session_limited:
-            break  # for 루프가 break 없이 완료 = 전체 처리 완료
 
     if all_slugs:
         _append_log(all_sources, all_slugs)
         print(f"완료: {len(all_slugs)}개 페이지 생성, log.md 업데이트됨", file=sys.stderr)
-    else:
-        print("미처리 PDF 없음. 모두 처리되었습니다.", file=sys.stderr)
 
-    rebuild_index()
+    # MCP를 통해 index.md 전체 재생성 (정합성 보장)
+    result = rebuild_index()
+    print(result, file=sys.stderr)
 
 
 # ── 진입점 ────────────────────────────────────────────────────────────
@@ -512,7 +374,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] == "--ingest":
         auto_ingest()
     elif sys.argv[1] == "--rebuild-index":
-        rebuild_index()
+        print(rebuild_index())
     else:
         path = Path(sys.argv[1])
         content = read_file(path)

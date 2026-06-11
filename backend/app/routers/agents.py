@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
-from llm_provider import astream as llm_astream, web_search as llm_web_search
+from llm_provider import astream as llm_astream, web_search as llm_web_search, run as llm_run
+from tools.wiki_client import search as wiki_search, read_page as wiki_read_page
 
 # claude-cli 등 PATH에 없는 바이너리를 subprocess에서 찾을 수 있도록 경로 보정
 _CLAUDE_BIN_DIR = os.path.expanduser("~/.nvm/versions/node/v24.14.0/bin")
@@ -34,7 +35,6 @@ from pydantic import BaseModel
 ROOT = Path(__file__).resolve().parent.parent.parent.parent
 AGENTS_DIR = ROOT / "agents"
 RAW_DIR = ROOT / "raw"
-WIKI_PAGES_DIR = ROOT / "wiki" / "pages"
 
 router = APIRouter()
 
@@ -66,37 +66,26 @@ _STOPWORDS = {
 }
 
 
-def _find_wiki_pages(question: str, max_pages: int = 5) -> list[Path]:
-    """질문 키워드로 관련 wiki 페이지를 찾는다. 파일명·태그·제목에 가중치를 부여한다."""
-    if not WIKI_PAGES_DIR.exists():
-        return []
+def _extract_keywords_with_llm(question: str) -> set[str]:
+    """LLM으로 구어체 질문에서 기술 용어 키워드를 추출한다."""
+    try:
+        result = llm_run(
+            f"다음 질문에서 wiki 검색에 유용한 기술 용어·알고리즘명·변수명·개념어만 추출해.\n"
+            f"쉼표로 구분된 단어 목록만 출력해. 설명 금지.\n\n질문: {question}",
+            system="키워드 추출 전용. 단어 목록만 출력.",
+        )
+        terms = re.findall(r"[\w\-]+", result.lower())
+        return {t for t in terms if t not in _STOPWORDS}
+    except Exception:
+        return set()
 
-    all_kw = re.findall(r"\w+", question.lower())
-    keywords = {kw for kw in all_kw if len(kw) >= 2 and kw not in _STOPWORDS}
-    if not keywords:
-        return []
 
-    scored: list[tuple[int, Path]] = []
-    for page in WIKI_PAGES_DIR.rglob("*.md"):
-        raw = page.read_text(encoding="utf-8", errors="replace")
-        lower = raw.lower()
-
-        stem_score = sum(3 for kw in keywords if kw in page.stem.lower())
-
-        tag_m = re.search(r"tags:\s*\[(.*?)\]", lower, re.DOTALL)
-        tag_score = sum(2 for kw in keywords if tag_m and kw in tag_m.group(1))
-
-        title_m = re.search(r"title:\s*(.+)", lower)
-        title_score = sum(2 for kw in keywords if title_m and kw in title_m.group(1))
-
-        body_score = sum(1 for kw in keywords if kw in lower)
-
-        total = stem_score + tag_score + title_score + body_score
-        if total > 0:
-            scored.append((total, page))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-    return [p for _, p in scored[:max_pages]]
+def _find_wiki_pages(question: str, llm_keywords: set[str] | None = None, max_pages: int = 5) -> list[dict]:
+    """MCP wiki_search를 통해 관련 wiki 페이지 목록을 반환한다."""
+    combined = question
+    if llm_keywords:
+        combined += " " + " ".join(llm_keywords)
+    return wiki_search(combined, top_k=max_pages)
 
 
 class EditRequest(BaseModel):
@@ -127,6 +116,7 @@ async def _stream_proc(cmd: list[str]):
         *cmd,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.DEVNULL,
+        env=_AGENT_ENV,
     )
     decoder = codecs.getincrementaldecoder("utf-8")("replace")
     while True:
@@ -166,12 +156,13 @@ async def wiki_query(req: WikiRequest):
             f"## 현재 열람 중인 강의 노트 {label}\n\n{req.notes.strip()}"
         )
 
-    # 2순위: wiki 페이지 키워드 검색
-    wiki_pages = _find_wiki_pages(req.question)
+    # 2순위: wiki 페이지 키워드 검색 (LLM 키워드 추출 병행)
+    llm_kw = await asyncio.to_thread(_extract_keywords_with_llm, req.question)
+    wiki_pages = _find_wiki_pages(req.question, llm_keywords=llm_kw)
     if wiki_pages:
         pages_text = "\n\n---\n\n".join(
-            f"### {p.stem}\n\n{p.read_text(encoding='utf-8', errors='replace')}"
-            for p in wiki_pages
+            f"### {hit['slug']}\n\n{wiki_read_page(hit['slug'])}"
+            for hit in wiki_pages
         )
         context_parts.append(f"## 관련 Wiki 페이지\n\n{pages_text}")
 
@@ -180,7 +171,7 @@ async def wiki_query(req: WikiRequest):
         "wiki_query | q=%r | notes=%s | wiki_pages=%s | fallback_web=%s",
         req.question[:80],
         f"yes({req.subject})" if has_notes else "no",
-        [p.stem for p in wiki_pages] if wiki_pages else "none",
+        [h["slug"] for h in wiki_pages] if wiki_pages else "none",
         not context_parts,
     )
 

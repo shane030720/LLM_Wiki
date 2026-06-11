@@ -44,6 +44,10 @@ _CLI_ENV = {**os.environ, "PATH": f"{os.path.dirname(_CLAUDE_BIN or '')}:{os.env
 # CLI 모드 여부
 _CLI_MODELS = {"claude-cli", "gemini-cli"}
 
+# Claude CLI 세션 한도 오류 식별자
+_SESSION_LIMIT_MARKER = "session limit"
+_SESSION_LIMIT_MSG = "⚠️ Claude CLI 세션 한도에 도달했습니다. 자정 이후 재시도하세요."
+
 
 def _is_cli() -> bool:
     return LLM_MODEL in _CLI_MODELS
@@ -70,7 +74,10 @@ def _cli_run(prompt: str, system: str | None = None) -> str:
     )
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or f"CLI 오류 (exit {result.returncode})")
-    return result.stdout.strip()
+    out = result.stdout.strip()
+    if _SESSION_LIMIT_MARKER in out.lower():
+        raise RuntimeError(f"Claude CLI 세션 한도 도달: {out}")
+    return out
 
 
 def _cli_stream(prompt: str, system: str | None = None) -> Iterator[str]:
@@ -80,17 +87,23 @@ def _cli_stream(prompt: str, system: str | None = None) -> Iterator[str]:
         env=_CLI_ENV,
     )
     decoder = codecs.getincrementaldecoder("utf-8")("replace")
+    chunks: list[str] = []
     while True:
         chunk = proc.stdout.read(256)
         if not chunk:
             tail = decoder.decode(b"", final=True)
             if tail:
-                yield tail
+                chunks.append(tail)
             break
         text = decoder.decode(chunk)
         if text:
-            yield text
+            chunks.append(text)
     proc.wait()
+    full = "".join(chunks)
+    if _SESSION_LIMIT_MARKER in full.lower():
+        yield _SESSION_LIMIT_MSG
+    else:
+        yield full
 
 
 async def _cli_astream(prompt: str, system: str | None = None) -> AsyncIterator[str]:
@@ -102,17 +115,23 @@ async def _cli_astream(prompt: str, system: str | None = None) -> AsyncIterator[
         env=_CLI_ENV,
     )
     decoder = codecs.getincrementaldecoder("utf-8")("replace")
+    chunks: list[str] = []
     while True:
         chunk = await proc.stdout.read(256)
         if not chunk:
             tail = decoder.decode(b"", final=True)
             if tail:
-                yield tail
+                chunks.append(tail)
             break
         text = decoder.decode(chunk)
         if text:
-            yield text
+            chunks.append(text)
     await proc.wait()
+    full = "".join(chunks)
+    if _SESSION_LIMIT_MARKER in full.lower():
+        yield _SESSION_LIMIT_MSG
+    else:
+        yield full
 
 
 # ── LiteLLM API 방식 ──────────────────────────────────────────────────────────

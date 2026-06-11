@@ -30,3 +30,4 @@ wiki/ingest_status.json
 
 # ── Claude Code ───────────────────────────────
 .claude/
+!.claude/settings.json

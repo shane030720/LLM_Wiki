@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 from app.db.chroma import init_chroma
-from app.routers import query, sync, subjects, agents as agents_router, agentmemo as agentmemo_router
+from app.routers import query, sync, subjects, agents as agents_router, agentmemo as agentmemo_router, wiki_pages as wiki_pages_router
 
 AGENTS_DIR = Path(__file__).resolve().parent.parent.parent / "agents"
 
@@ -44,6 +44,7 @@ app.include_router(sync.router,            prefix="/api")
 app.include_router(subjects.router,        prefix="/api")
 app.include_router(agents_router.router,   prefix="/api")
 app.include_router(agentmemo_router.router)
+app.include_router(wiki_pages_router.router,   prefix="/api")
 
 # Serve the GUI from project root
 GUI_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "wiki_gui.html")

@@ -25,6 +25,7 @@ EDIT_AGENT = Path(__file__).parent / "edit_agent.py"
 
 sys.path.insert(0, str(PROJECT_DIR))
 from llm_provider import run as llm_run
+from tools.wiki_client import pages_list as wiki_pages_list
 
 # ── AgentMEMO 메모 기록 ───────────────────────────────────────────────────────
 _MEMO_DB = Path(os.environ.get(
@@ -206,7 +207,7 @@ def find_stale_pages() -> list[tuple[str, str, int]]:
 
 
 def build_status_report(today: str, new_pdfs: list, stale_pdfs: list) -> str:
-    wiki_pages = get_wiki_pages()
+    page_count = wiki_pages_list().get("total", len(get_wiki_pages()))
     broken = find_broken_links()
     stale_pages = find_stale_pages()
 
@@ -227,7 +228,7 @@ def build_status_report(today: str, new_pdfs: list, stale_pdfs: list) -> str:
     ) or "  이상 없음"
 
     return f"""점검 날짜: {today}
-wiki 페이지 수: {len(wiki_pages)}개
+wiki 페이지 수: {page_count}개
 
 ingest 대기 (신규 raw):
 {new_list}
@@ -252,7 +253,7 @@ def trigger_ingest() -> None:
     """edit_agent.py --ingest 를 호출해 미처리 파일을 자동 처리한다."""
     print("  → edit_agent.py --ingest 실행 중...", file=sys.stderr)
     subprocess.Popen(
-        ["python3", str(EDIT_AGENT), "--ingest"],
+        [sys.executable, str(EDIT_AGENT), "--ingest"],
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
@@ -262,7 +263,7 @@ def trigger_rebuild_index() -> None:
     """edit_agent.py --rebuild-index 를 호출해 index.md를 재생성한다."""
     print("  → index.md 재생성 중...", file=sys.stderr)
     subprocess.run(
-        ["python3", str(EDIT_AGENT), "--rebuild-index"],
+        [sys.executable, str(EDIT_AGENT), "--rebuild-index"],
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
@@ -321,7 +322,58 @@ def run(auto_ingest: bool = True) -> str:
     return report
 
 
+def log_check() -> None:
+    """Stop hook용: LLM 없이 파일 기반 wiki 상태 체크 후 log.md에만 기록.
+
+    stdout 출력 없음 — 백그라운드 hook으로 동작.
+    """
+    today = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    # MCP를 통해 페이지 통계 수집
+    result = wiki_pages_list()
+    pages = result.get("pages", [])
+    total = result.get("total", 0)
+    concepts  = sum(1 for p in pages if p.get("category") == "concept")
+    entities  = sum(1 for p in pages if p.get("category") == "entity")
+    syntheses = sum(1 for p in pages if p.get("category") == "synthesis")
+
+    # 파일 기반 점검 (읽기 전용 — MCP 우회 허용)
+    status   = load_ingest_status()
+    new_pdfs = find_new_raw_pdfs(status)
+    stale    = find_stale_pdfs(status)
+    broken   = find_broken_links()
+
+    issues = []
+    if new_pdfs:
+        issues.append(f"미처리 PDF {len(new_pdfs)}개")
+    if stale:
+        issues.append(f"re-ingest 필요 {len(stale)}개")
+    if broken:
+        issues.append(f"깨진 링크 {len(broken)}개")
+    summary = ", ".join(issues) if issues else "이상 없음"
+
+    broken_detail = "\n".join(
+        f"  - {page}에서 [[{slug}]] 참조 오류" for page, slug in broken
+    ) if broken else "  없음"
+
+    entry = (
+        f"\n## [{today}] stop-hook | wiki 상태 체크\n\n"
+        f"- **총 페이지:** {total}개"
+        f" (concept {concepts} / entity {entities} / synthesis {syntheses})\n"
+        f"- **미처리 PDF:** {len(new_pdfs)}개\n"
+        f"- **re-ingest 필요:** {len(stale)}개\n"
+        f"- **깨진 링크:** {len(broken)}개\n"
+        f"{broken_detail}\n"
+        f"- **종합:** {summary}\n"
+    )
+    append_to_log(entry)
+
+
 if __name__ == "__main__":
-    # --no-ingest 플래그로 자동 ingest 비활성화 가능
-    auto = "--no-ingest" not in sys.argv
-    print(run(auto_ingest=auto))
+    if "--log-check" in sys.argv:
+        # Stop hook 전용: 무음 파일 기반 체크
+        log_check()
+    else:
+        # 일반 실행: LLM 보고서 생성 + AgentMEMO 기록
+        auto = "--no-ingest" not in sys.argv
+        print(run(auto_ingest=auto))
