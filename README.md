@@ -13,76 +13,19 @@ raw/{과목}/파일.pdf  →  Edit Agent  →  wiki/pages/ 자동 생성
 
 ---
 
-## 30분 퀵스타트
-
-처음 보는 사람이 자기 자료 1건으로 첫 위키 페이지를 만들고 화면에서 확인하는 가이드입니다.
-
-### 1단계 — 설치 (5분)
+## 시작하기
 
 ```bash
 git clone https://github.com/shane030720/LLM_Wiki.git
 cd LLM_Wiki
-
-python -m venv .venv
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r backend/requirements.txt
+cp .env.example .env          # .env 열어서 LLM_MODEL 설정
+bash setup.sh                 # 최초 1회
+bash start.sh                 # 서버 시작 → http://localhost:8000
 ```
 
-### 2단계 — LLM 설정 (2분)
-
-```bash
-cp .env.example .env
-```
-
-`.env` 파일을 열어 `LLM_MODEL` 한 줄만 설정합니다.
-
-```bash
-# API 키 없이 사용 (Claude Pro 구독 필요)
-LLM_MODEL=claude-cli
-
-# API 키 없이 사용 (Gemini CLI 설치 필요)
-LLM_MODEL=gemini-cli
-
-# API 키 사용
-LLM_MODEL=anthropic/claude-sonnet-4-6
-ANTHROPIC_API_KEY=sk-ant-...
-```
-
-> API 키는 `.env`에만 입력하세요. 코드에 직접 넣지 마세요. `.env`는 `.gitignore`에 포함되어 있습니다.
-
-### 3단계 — 서버 시작 (1분)
-
-```bash
-bash setup.sh   # 최초 1회 — systemd 서비스 등록
-bash start.sh   # 서버 시작
-```
-
-브라우저에서 `http://localhost:8000` 접속.
-
-### 4단계 — 강의자료 추가 (1분)
-
-```
-raw/
-└── 자료구조/
-    └── week01.pdf   ← 여기에 PDF 복사
-```
-
-```bash
-mkdir -p raw/자료구조
-cp ~/Downloads/week01.pdf raw/자료구조/
-```
-
-### 5단계 — 첫 위키 페이지 생성 (15분)
-
-1. 브라우저에서 좌측 네비게이션 → **자료구조** → **week01.pdf** 클릭
-2. Edit Agent가 PDF를 읽어 마크다운 정리 노트를 실시간 스트리밍
-3. 정리가 끝나면 `wiki/pages/concepts/` 아래에 위키 페이지 자동 생성
-
-### 6단계 — 위키 페이지 확인 (1분)
-
-- **Q&A**: 우측 **🧠 위키 에이전트** 탭 → 질문 입력 → Enter
-- **퀴즈**: **📝 퀴즈** 탭 → 문제 수 설정 → **문제 생성**
-- **위키 목록**: `wiki/pages/` 폴더 또는 `wiki/index.md` 확인
+PDF는 `raw/{과목}/` 폴더에 넣으면 됩니다. 웹 UI에서 파일을 선택하면 Edit Agent가 자동으로 wiki 페이지를 생성합니다.
 
 ---
 
