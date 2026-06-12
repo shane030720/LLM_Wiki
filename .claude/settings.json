@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "llm-wiki": {
+      "command": ".venv/bin/python",
+      "args": ["tools/wiki_mcp.py"],
+      "description": "LLM Wiki MCP 서버 — wiki 페이지 검색/읽기/추가/수정"
+    }
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".venv/bin/python agents/back_agent.py --log-check"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".venv/bin/python tools/check_wiki_access.py"
+          }
+        ]
+      }
+    ]
+  }
+}
